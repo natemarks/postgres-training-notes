@@ -228,3 +228,15 @@ server started
 
 
 ```
+
+
+```console
+postgres=# \db
+               List of tablespaces
+    Name    |  Owner   |        Location         
+------------+----------+-------------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /certfirst_drive/base2/
+(3 rows)
+```
