@@ -4,3 +4,5 @@
 
 
 [Postgres Up and Running](https://www.amazon.com/dp/1491963417?tag=29834000-20&linkCode=ogi&th=1&psc=1)
+
+[AWS Postgres Diag script](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SupportScripts.PostgreSQL.html)
