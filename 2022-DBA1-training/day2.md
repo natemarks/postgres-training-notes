@@ -240,3 +240,77 @@ postgres=# \db
  tblspc     | postgres | /certfirst_drive/base2/
 (3 rows)
 ```
+
+
+### LAB4 Tablesoaces
+```console
+[postgres@ip-172-31-80-69 pg_tblspc]$ exit
+logout
+[root@ip-172-31-80-69 ec2-user]# mkdir -p /home/tbl1
+[root@ip-172-31-80-69 ec2-user]# mkdir -p /home/tbl2
+[root@ip-172-31-80-69 ec2-user]# chown -R postgres:postgres /home/tbl1
+[root@ip-172-31-80-69 ec2-user]# chown -R postgres:postgres /home/tbl2
+[root@ip-172-31-80-69 ec2-user]# su - postgres 
+Last login: Wed Sep 14 15:33:41 UTC 2022 on pts/1
+
+```
+
+```console
+postgres=# create tablespace tbl1 location '/home/tbl1';
+create tablespace tbl2 location '/home/tbl2';
+CREATE TABLESPACE
+CREATE TABLESPACE
+
+
+postgres=# select oid,spcname,pg_tablespace_location(oid) from pg_tablespace;
+  oid  |  spcname   | pg_tablespace_location  
+-------+------------+-------------------------
+  1663 | pg_default | 
+  1664 | pg_global  | 
+ 16428 | tblspc     | /certfirst_drive/base2/
+ 16441 | tbl2       | /home/tbl2
+ 16442 | tbl1       | /home/tbl1
+(5 rows)
+
+postgres=# create database db1 tablespace tbl1 ;
+create database db2 tablespace tbl2 ;
+CREATE DATABASE
+CREATE DATABASE
+
+
+postgres=# \c db1
+You are now connected to database "db1" as user "postgres".
+db1=# create table employee(id int) tablespace tbl2 ;
+CREATE TABLE
+db1=# create index employee_idx on employee(id) tablespace tbl1 ;
+CREATE INDEX
+db1=# 
+
+
+\c db2;
+
+create table hr(id int) tablespace tbl1;
+create table accounts(id int) tablespace tbl2;
+create index accounts_idx on accounts(id) tablespace tbl2 ;
+db1=# \c db2
+You are now connected to database "db2" as user "postgres".
+db2=# create table hr(id int) tablespace tbl1;
+CREATE TABLE
+db2=# 
+db2=# create table accounts(id int) tablespace tbl2;
+CREATE TABLE
+db2=# create index accounts_idx on accounts(id) tablespace tbl2 ;
+CREATE INDEX
+db2=# 
+db2=# select oid,spcname,pg_tablespace_location(oid) from pg_tablespace;
+  oid  |  spcname   | pg_tablespace_location  
+-------+------------+-------------------------
+  1663 | pg_default | 
+  1664 | pg_global  | 
+ 16428 | tblspc     | /certfirst_drive/base2/
+ 16441 | tbl2       | /home/tbl2
+ 16442 | tbl1       | /home/tbl1
+(5 rows)
+
+
+```
