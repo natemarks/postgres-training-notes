@@ -176,3 +176,55 @@ alter database salesdb tablespace tblspc;
 /ssd_drive/base2/PG_14_202107181/16438
 /ssd_drive/base2/PG_14_202107181/16392
 ```
+
+
+### LAB# move the table spoace
+
+
+```console
+postgres=# \db
+           List of tablespaces
+    Name    |  Owner   |     Location     
+------------+----------+------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /ssd_drive/base2
+(3 rows)
+
+```
+
+
+```console
+[root@ip-172-31-80-69 ec2-user]# su - postgres
+Last login: Wed Sep 14 14:27:42 UTC 2022 on pts/0
+[postgres@ip-172-31-80-69 ~]$ pg_ctl -D /opt/edbstore/data stop
+waiting for server to shut down.... done
+server stopped
+[postgres@ip-172-31-80-69 ~]$ exit
+logout
+[root@ip-172-31-80-69 ec2-user]# mkdir /certfirst_drive
+[root@ip-172-31-80-69 ec2-user]# chown -R postgres:postgres /certfirst_drive/
+[root@ip-172-31-80-69 ec2-user]# su - postgres 
+Last login: Wed Sep 14 15:31:54 UTC 2022 on pts/1
+[postgres@ip-172-31-80-69 ~]$ ls /ssd_drive/
+base2
+[postgres@ip-172-31-80-69 ~]$ ls /ssd_drive/base2/
+PG_14_202107181
+[postgres@ip-172-31-80-69 ~]$ ls -lrt /opt/edbstore/data/pg_tblspc/
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 14:27 16428 -> /ssd_drive/base2
+[postgres@ip-172-31-80-69 ~]$ mv /ssd_drive/base2/ /certfirst_drive/
+[postgres@ip-172-31-80-69 ~]$ cd /opt/edbstore/data/pg_tblspc/
+[postgres@ip-172-31-80-69 pg_tblspc]$ ll
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 14:27 16428 -> /ssd_drive/base2
+[postgres@ip-172-31-80-69 pg_tblspc]$ ln -fs  /certfirst_drive/base2/ 16428 
+[postgres@ip-172-31-80-69 pg_tblspc]$ ll
+total 0
+lrwxrwxrwx. 1 postgres postgres 23 Sep 14 15:36 16428 -> /certfirst_drive/base2/
+[postgres@ip-172-31-80-69 pg_tblspc]$ pg_ctl -D /opt/edbstore/data -l /opt/edbstore/logfile start
+waiting for server to start.... done
+server started
+
+
+```
