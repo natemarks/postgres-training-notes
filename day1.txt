@@ -1,0 +1,1013 @@
+﻿https://tinyurl.com/pgsqlcertfirst
+
+
+====================INSTALLATION METHODS
+
+
+YUM INSTALL 
+RPM
+SOURCE
+BINARY --------> enterprisedb.com (commerical)
+
+
+=======================DOWNLOAD AND INSTALL 
+
+
+[root@localhost ~]# whoami 
+root
+
+
+[root@localhost]# yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+
+
+
+[root@localhost ~]# yum install postgresql14-server
+
+
+
+
+===============HOME PATH FOR USER "postgres"
+
+
+[root@localhost ~]# mkdir /db
+[root@localhost ~]# 
+[root@localhost ~]# mkdir /db/pgsql
+[root@localhost ~]# 
+[root@localhost ~]# cp /root/.bash_profile /db/pgsql/ 
+[root@localhost ~]# 
+[root@localhost ~]# vi /etc/passwd
+
+
+postgres:x:1001:1001:PostgreSQL:/db/pgsql:/bin/bash
+
+
+:wq
+
+
+[root@localhost ~]# cd /db/pgsql/
+[root@localhost pgsql]# 
+[root@localhost pgsql]# vi .bash_profile 
+
+
+
+
+# .bash_profile
+
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+
+# User specific environment and startup programs
+
+
+PATH=$PATH:$HOME/bin
+export PATH=/usr/pgsql-14/bin:$PATH
+export PATH
+
+
+:WQ
+
+
+[root@localhost pgsql]# chown postgres:postgres /usr/pgsql-14/ -R
+[root@localhost pgsql]# 
+[root@localhost pgsql]# chown postgres:postgres /db/pgsql/ -R
+
+
+
+
+[root@localhost pgsql]# su - postgres
+Last login: Tue Sep 13 14:36:15 IST 2022 on pts/1
+-bash-4.2$ 
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ psql --version
+psql (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ initdb --version
+initdb (PostgreSQL) 14.5
+
+
+====================================
+
+
+==============================
+
+
+CREATING NEW INSTANCE / CLUSTER
+
+
+Steps :
+
+
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ mkdir data
+-bash-4.2$ 
+-bash-4.2$ initdb --version
+initdb (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ initdb -D data
+
+
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ ls
+
+
+-bash-4.2$ vi postgresql.conf 
+
+
+port = 5432
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ start
+waiting for server to start....2022-09-13 21:21:11.829 IST [10936] LOG:  redirecting log output to logging collector process
+2022-09-13 21:21:11.829 IST [10936] HINT:  Future log output will appear in directory "log".
+ done
+server started
+-bash-4.2$ 
+-bash-4.2$ netstat -pant | grep postgres
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+tcp        0      0 127.0.0.1:5432          0.0.0.0:*               LISTEN      10936/postgres      
+tcp6       0      0 ::1:5432                :::*                    LISTEN      10936/postgres   
+
+
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+ data_directory 
+----------------
+ /db/pgsql/data
+(1 row)
+
+
+postgres=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ template1
+ template0
+(3 rows)
+
+
+postgres=# \conninfo
+You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+postgres=# 
+
+
+
+
+
+
+
+
+
+
+
+
+=======================CREATING AND MANAGING DATABASE 
+
+
+postgres=# \conninfo
+You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# create database edbstore;
+CREATE DATABASE
+postgres=# 
+postgres=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ edbstore
+ template1
+ template0
+(4 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ createdb -p 5432 -U postgres salesdb
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# 
+salesdb=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ edbstore
+ template1
+ template0
+ salesdb
+(5 rows)
+
+
+salesdb=# show data_directory;
+ data_directory 
+----------------
+ /db/pgsql/data
+(1 row)
+
+
+
+
+salesdb=# select oid,datname from pg_database;
+  oid  |  datname  
+-------+-----------
+ 14486 | postgres
+ 16384 | edbstore
+     1 | template1
+ 14485 | template0
+ 16385 | salesdb
+(5 rows)
+
+
+salesdb=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/
+-bash-4.2$ 
+-bash-4.2$ ls
+1  14485  14486  16384  16385
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==========================DATAFILE 
+
+
+-bash-4.2$ whoami 
+postgres
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# select current_schemas(true);
+   current_schemas   
+---------------------
+ {pg_catalog,public}
+(1 row)
+
+
+postgres=# select current_database();
+ current_database 
+------------------
+ postgres
+(1 row)
+
+
+postgres=# show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+postgres=# create table sample(id int,name varchar(10));
+CREATE TABLE
+postgres=# 
+postgres=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | sample | table | postgres
+(1 row)
+
+
+postgres=# select relfilenode,relname from pg_class where relname='sample';
+ relfilenode | relname 
+-------------+---------
+       16386 | sample
+(1 row)
+
+
+postgres=# 
+
+
+
+
+
+
+
+
+postgres=# select oid,datname from pg_database;
+  oid  |  datname  
+-------+-----------
+ 14486 | postgres
+ 16384 | edbstore
+     1 | template1
+ 14485 | template0
+ 16385 | salesdb
+(5 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/14486/
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+0        16386
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres -c "insert into sample values(1,'postgres');"
+INSERT 0 1
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+8.0K        16386
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres -c "insert into sample values(generate_Series(2,200),'postgres');"
+INSERT 0 199
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+16K        16386
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select relpages,reltuples from pg_Class where relname='sample';
+ relpages | reltuples 
+----------+-----------
+        0 |        -1
+(1 row)
+
+
+postgres=# 
+postgres=# analyze sample ;
+ANALYZE
+postgres=# 
+
+
+
+
+postgres=# select relpages,reltuples from pg_Class where relname='sample';
+ relpages | reltuples 
+----------+-----------
+        2 |       200
+(1 row)
+
+
+========================CASE STUDY
+
+
+1. CREATE edbstore DIRECTORY under /opt
+
+
+2. chown to postgres to edbstore
+
+
+3. create cluster using edbstore directory
+
+
+4. change the edbstore cluster port to 5433 (postgresql.conf => "port=5432" remove #)
+
+
+5. start the edbstore cluster
+
+
+6. connect to edbstore cluster
+
+
+7. create database edbstore;
+
+
+8. connect to edbstore as postgres user
+
+
+9. create table employee(id int) under edbstore 
+
+
+10. find the physical location of edbstore database and employee table
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PUBLIC SCHEMA AND USERS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# 
+salesdb=# create user app01 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ app01     |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+
+
+salesdb=# \dt
+Did not find any relations.
+salesdb=# 
+salesdb=# \conninfo
+You are connected to database "salesdb" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+salesdb=# 
+salesdb=# show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=# create table sales_q1_2022(qtr char(2), report char(10));
+CREATE TABLE
+salesdb=# 
+salesdb=# \dt
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ public | sales_q1_2022 | table | postgres
+(1 row)
+
+
+salesdb=# \c salesdb app01 
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> 
+salesdb=> \dt
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ public | sales_q1_2022 | table | postgres
+(1 row)
+
+
+salesdb=> select * from sales_q1_2022 ;
+ERROR:  permission denied for table sales_q1_2022
+salesdb=> 
+salesdb=> 
+salesdb=> \c salesdb postgres 
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# 
+salesdb=# grant select on all tables in schema public to app01 ;
+GRANT
+salesdb=# 
+salesdb=# 
+salesdb=# \c salesdb app01
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> 
+salesdb=> select * from sales_q1_2022 ;
+ qtr | report 
+-----+--------
+(0 rows)
+
+
+salesdb=> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PRIVATE SCHEMA AND USERS
+
+
+
+
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# create user user01 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# create user user02 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# grant create on database salesdb to user01;
+GRANT
+salesdb=# 
+salesdb=# create schema accounts authorization user02;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# \dn
+   List of schemas
+   Name   |  Owner   
+----------+----------
+ accounts | user02
+ public   | postgres
+(2 rows)
+
+
+salesdb=# \c salesdb user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> create schema hr;
+CREATE SCHEMA
+salesdb=> 
+salesdb=> 
+salesdb=> \dn
+   List of schemas
+   Name   |  Owner   
+----------+----------
+ accounts | user02
+ hr       | user01
+ public   | postgres
+(3 rows)
+
+
+salesdb=> 
+salesdb=> \c salesdb user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> create table empinfo(empid int, empname varchar(10));
+CREATE TABLE
+salesdb=> 
+salesdb=> \dt
+         List of relations
+ Schema |  Name   | Type  | Owner  
+--------+---------+-------+--------
+ hr     | empinfo | table | user01
+(1 row)
+
+
+salesdb=> \c - postgres
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# alter user user01 set search_path to hr;
+ALTER ROLE
+salesdb=# 
+salesdb=# 
+salesdb=# \c - app01 
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> 
+salesdb=> \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> 
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> 
+salesdb=> create table inventory(prodid int,prodname varchar(10));
+CREATE TABLE
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROLES AND USERS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# create role dbrole;
+CREATE ROLE
+salesdb=# 
+salesdb=# create schema prod authorization dbrole;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# 
+salesdb=# set role dbrole ;
+SET
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> \c - postgres
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# 
+salesdb=# alter role dbrole set search_path to prod ;
+ALTER ROLE
+salesdb=# 
+salesdb=# create user testuser;
+CREATE ROLE
+salesdb=# 
+salesdb=# create schema inventory authorization testuser;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# alter user testuser set search_path to inventory;
+ALTER ROLE
+salesdb=# 
+salesdb=# grant dbrole to testuser ;
+GRANT ROLE
+salesdb=# 
+salesdb=# \c salesdb testuser 
+You are now connected to database "salesdb" as user "testuser".
+salesdb=> 
+salesdb=> show search_path ;
+ search_path 
+-------------
+ inventory
+(1 row)
+GRANT PERMISSIONS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> 
+salesdb=> \c salesdb user02 
+You are now connected to database "salesdb" as user "user02".
+salesdb=> 
+salesdb=> \dn
+   List of schemas
+   Name    |  Owner   
+-----------+----------
+ accounts  | user02
+ hr        | user01
+ inventory | testuser
+ prod      | dbrole
+ public    | postgres
+(5 rows)
+
+
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> \dt
+Did not find any relations.
+salesdb=> 
+salesdb=> 
+salesdb=> 
+salesdb=> \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> 
+salesdb=> grant USAGE on SCHEMA hr to user02;
+GRANT
+salesdb=> 
+salesdb=> grant select on all tables in schema hr to user02;
+GRANT
+salesdb=> 
+salesdb=> 
+salesdb=> 
+salesdb=> \c - user02
+You are now connected to database "salesdb" as user "user02".
+salesdb=> 
+salesdb=> 
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> select count(*) from empinfo ;
+ count 
+-------
+     0
+(1 row)
+
+
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> create table test(id int);
+ERROR:  permission denied for schema hr
+LINE 1: create table test(id int);
+                     ^
+salesdb=> 
+salesdb=> 
+
+
+
+
+
+
+
+
+======================================================================
+------------------------CASE STUDY ON SCHEMA -----------------------
+======================================================================
+
+
+
+
+Lab Exercise - 1
+
+
+1. A new website is to be developed for an online music store.
+− Create a database user edbstore in your existing cluster
+− Create an edbstore database with ownership of edbstore user
+− Login to the edbstore database using the edbstore user and create the edbstore schema
+
+
+Lab Exercise - 2
+
+
+1. create database fdb
+2. create three users f01,f02,f03
+3. connect to fdb database with f01 user and create below objects
+
+
+SCHEMAS: f01_hr, f01_accounts
+
+
+TABLES :connect to f01_hr schema and create emp_hr(id int) table;
+
+
+TABLES :connect to f01_hr schema and create emp_admin(id int) table;
+
+
+TABLES : connect to f01_accounts schema and create emp_accounts(id int) table;
+
+
+4. GRANT PERMISSION TO f02 user to access only emp_hr table
+
+
+5. GRANT PERMISSION TO f03 user to access all tables in  f01_hr & f01_accounts
