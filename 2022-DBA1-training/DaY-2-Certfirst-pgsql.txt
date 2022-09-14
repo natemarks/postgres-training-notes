@@ -1,0 +1,2259 @@
+﻿https://tinyurl.com/pgsqlcertfirst
+
+
+====================INSTALLATION METHODS
+
+
+YUM INSTALL 
+RPM
+SOURCE
+BINARY --------> enterprisedb.com (commerical)
+
+
+=======================DOWNLOAD AND INSTALL 
+
+
+[root@localhost ~]# whoami 
+root
+
+
+[root@localhost]# yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+
+
+
+[root@localhost ~]# yum install postgresql14-server
+
+
+
+
+===============HOME PATH FOR USER "postgres"
+
+
+[root@localhost ~]# mkdir /db
+[root@localhost ~]# 
+[root@localhost ~]# mkdir /db/pgsql
+[root@localhost ~]# 
+[root@localhost ~]# cp /root/.bash_profile /db/pgsql/ 
+[root@localhost ~]# 
+[root@localhost ~]# vi /etc/passwd
+
+
+postgres:x:1001:1001:PostgreSQL:/db/pgsql:/bin/bash
+
+
+:wq
+
+
+[root@localhost ~]# cd /db/pgsql/
+[root@localhost pgsql]# 
+[root@localhost pgsql]# vi .bash_profile 
+
+
+
+
+# .bash_profile
+
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+
+# User specific environment and startup programs
+
+
+PATH=$PATH:$HOME/bin
+export PATH=/usr/pgsql-14/bin:$PATH
+export PATH
+
+
+:WQ
+
+
+[root@localhost pgsql]# chown postgres:postgres /usr/pgsql-14/ -R
+[root@localhost pgsql]# 
+[root@localhost pgsql]# chown postgres:postgres /db/pgsql/ -R
+
+
+
+
+[root@localhost pgsql]# su - postgres
+Last login: Tue Sep 13 14:36:15 IST 2022 on pts/1
+-bash-4.2$ 
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ psql --version
+psql (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ initdb --version
+initdb (PostgreSQL) 14.5
+
+
+====================================
+
+
+==============================
+
+
+CREATING NEW INSTANCE / CLUSTER
+
+
+Steps :
+
+
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ mkdir data
+-bash-4.2$ 
+-bash-4.2$ initdb --version
+initdb (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ initdb -D data
+
+
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ ls
+
+
+-bash-4.2$ vi postgresql.conf 
+
+
+port = 5432
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ start
+waiting for server to start....2022-09-13 21:21:11.829 IST [10936] LOG:  redirecting log output to logging collector process
+2022-09-13 21:21:11.829 IST [10936] HINT:  Future log output will appear in directory "log".
+ done
+server started
+-bash-4.2$ 
+-bash-4.2$ netstat -pant | grep postgres
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+tcp        0      0 127.0.0.1:5432          0.0.0.0:*               LISTEN      10936/postgres      
+tcp6       0      0 ::1:5432                :::*                    LISTEN      10936/postgres   
+
+
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+ data_directory 
+----------------
+ /db/pgsql/data
+(1 row)
+
+
+postgres=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ template1
+ template0
+(3 rows)
+
+
+postgres=# \conninfo
+You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+postgres=# 
+
+
+
+
+
+
+
+
+
+
+
+
+=======================CREATING AND MANAGING DATABASE 
+
+
+postgres=# \conninfo
+You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# create database edbstore;
+CREATE DATABASE
+postgres=# 
+postgres=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ edbstore
+ template1
+ template0
+(4 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ createdb -p 5432 -U postgres salesdb
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# 
+salesdb=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ edbstore
+ template1
+ template0
+ salesdb
+(5 rows)
+
+
+salesdb=# show data_directory;
+ data_directory 
+----------------
+ /db/pgsql/data
+(1 row)
+
+
+
+
+salesdb=# select oid,datname from pg_database;
+  oid  |  datname  
+-------+-----------
+ 14486 | postgres
+ 16384 | edbstore
+     1 | template1
+ 14485 | template0
+ 16385 | salesdb
+(5 rows)
+
+
+salesdb=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/
+-bash-4.2$ 
+-bash-4.2$ ls
+1  14485  14486  16384  16385
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==========================DATAFILE 
+
+
+-bash-4.2$ whoami 
+postgres
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# select current_schemas(true);
+   current_schemas   
+---------------------
+ {pg_catalog,public}
+(1 row)
+
+
+postgres=# select current_database();
+ current_database 
+------------------
+ postgres
+(1 row)
+
+
+postgres=# show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+postgres=# create table sample(id int,name varchar(10));
+CREATE TABLE
+postgres=# 
+postgres=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | sample | table | postgres
+(1 row)
+
+
+postgres=# select relfilenode,relname from pg_class where relname='sample';
+ relfilenode | relname 
+-------------+---------
+       16386 | sample
+(1 row)
+
+
+postgres=# 
+
+
+
+
+
+
+
+
+postgres=# select oid,datname from pg_database;
+  oid  |  datname  
+-------+-----------
+ 14486 | postgres
+ 16384 | edbstore
+     1 | template1
+ 14485 | template0
+ 16385 | salesdb
+(5 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/14486/
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+0        16386
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres -c "insert into sample values(1,'postgres');"
+INSERT 0 1
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+8.0K        16386
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres -c "insert into sample values(generate_Series(2,200),'postgres');"
+INSERT 0 199
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+16K        16386
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select relpages,reltuples from pg_Class where relname='sample';
+ relpages | reltuples 
+----------+-----------
+        0 |        -1
+(1 row)
+
+
+postgres=# 
+postgres=# analyze sample ;
+ANALYZE
+postgres=# 
+
+
+
+
+postgres=# select relpages,reltuples from pg_Class where relname='sample';
+ relpages | reltuples 
+----------+-----------
+        2 |       200
+(1 row)
+
+
+========================CASE STUDY
+
+
+1. CREATE edbstore DIRECTORY under /opt
+
+
+2. chown to postgres to edbstore
+
+
+3. create cluster using edbstore directory
+
+
+4. change the edbstore cluster port to 5433 (postgresql.conf => "port=5432" remove #)
+
+
+5. start the edbstore cluster
+
+
+6. connect to edbstore cluster
+
+
+7. create database edbstore;
+
+
+8. connect to edbstore as postgres user
+
+
+9. create table employee(id int) under edbstore 
+
+
+10. find the physical location of edbstore database and employee table
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PUBLIC SCHEMA AND USERS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# 
+salesdb=# create user app01 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ app01     |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+
+
+salesdb=# \dt
+Did not find any relations.
+salesdb=# 
+salesdb=# \conninfo
+You are connected to database "salesdb" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+salesdb=# 
+salesdb=# show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=# create table sales_q1_2022(qtr char(2), report char(10));
+CREATE TABLE
+salesdb=# 
+salesdb=# \dt
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ public | sales_q1_2022 | table | postgres
+(1 row)
+
+
+salesdb=# \c salesdb app01 
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> 
+salesdb=> \dt
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ public | sales_q1_2022 | table | postgres
+(1 row)
+
+
+salesdb=> select * from sales_q1_2022 ;
+ERROR:  permission denied for table sales_q1_2022
+salesdb=> 
+salesdb=> 
+salesdb=> \c salesdb postgres 
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# 
+salesdb=# grant select on all tables in schema public to app01 ;
+GRANT
+salesdb=# 
+salesdb=# 
+salesdb=# \c salesdb app01
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> 
+salesdb=> select * from sales_q1_2022 ;
+ qtr | report 
+-----+--------
+(0 rows)
+
+
+salesdb=> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PRIVATE SCHEMA AND USERS
+
+
+
+
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# create user user01 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# create user user02 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# grant create on database salesdb to user01;
+GRANT
+salesdb=# 
+salesdb=# create schema accounts authorization user02;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# \dn
+   List of schemas
+   Name   |  Owner   
+----------+----------
+ accounts | user02
+ public   | postgres
+(2 rows)
+
+
+salesdb=# \c salesdb user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> create schema hr;
+CREATE SCHEMA
+salesdb=> 
+salesdb=> 
+salesdb=> \dn
+   List of schemas
+   Name   |  Owner   
+----------+----------
+ accounts | user02
+ hr       | user01
+ public   | postgres
+(3 rows)
+
+
+salesdb=> 
+salesdb=> \c salesdb user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> create table empinfo(empid int, empname varchar(10));
+CREATE TABLE
+salesdb=> 
+salesdb=> \dt
+         List of relations
+ Schema |  Name   | Type  | Owner  
+--------+---------+-------+--------
+ hr     | empinfo | table | user01
+(1 row)
+
+
+salesdb=> \c - postgres
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# alter user user01 set search_path to hr;
+ALTER ROLE
+salesdb=# 
+salesdb=# 
+salesdb=# \c - app01 
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> 
+salesdb=> \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> 
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> 
+salesdb=> create table inventory(prodid int,prodname varchar(10));
+CREATE TABLE
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROLES AND USERS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# create role dbrole;
+CREATE ROLE
+salesdb=# 
+salesdb=# create schema prod authorization dbrole;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# 
+salesdb=# set role dbrole ;
+SET
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> \c - postgres
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# 
+salesdb=# alter role dbrole set search_path to prod ;
+ALTER ROLE
+salesdb=# 
+salesdb=# create user testuser;
+CREATE ROLE
+salesdb=# 
+salesdb=# create schema inventory authorization testuser;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# alter user testuser set search_path to inventory;
+ALTER ROLE
+salesdb=# 
+salesdb=# grant dbrole to testuser ;
+GRANT ROLE
+salesdb=# 
+salesdb=# \c salesdb testuser 
+You are now connected to database "salesdb" as user "testuser".
+salesdb=> 
+salesdb=> show search_path ;
+ search_path 
+-------------
+ inventory
+(1 row)
+GRANT PERMISSIONS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> 
+salesdb=> \c salesdb user02 
+You are now connected to database "salesdb" as user "user02".
+salesdb=> 
+salesdb=> \dn
+   List of schemas
+   Name    |  Owner   
+-----------+----------
+ accounts  | user02
+ hr        | user01
+ inventory | testuser
+ prod      | dbrole
+ public    | postgres
+(5 rows)
+
+
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> \dt
+Did not find any relations.
+salesdb=> 
+salesdb=> 
+salesdb=> 
+salesdb=> \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> 
+salesdb=> grant USAGE on SCHEMA hr to user02;
+GRANT
+salesdb=> 
+salesdb=> grant select on all tables in schema hr to user02;
+GRANT
+salesdb=> 
+salesdb=> 
+salesdb=> 
+salesdb=> \c - user02
+You are now connected to database "salesdb" as user "user02".
+salesdb=> 
+salesdb=> 
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> select count(*) from empinfo ;
+ count 
+-------
+     0
+(1 row)
+
+
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> create table test(id int);
+ERROR:  permission denied for schema hr
+LINE 1: create table test(id int);
+                     ^
+salesdb=> 
+salesdb=> 
+
+
+
+
+
+
+
+
+======================================================================
+------------------------CASE STUDY ON SCHEMA -----------------------
+======================================================================
+
+
+
+
+Lab Exercise - 1
+
+
+1. A new website is to be developed for an online music store.
+− Create a database user edbstore in your existing cluster
+− Create an edbstore database with ownership of edbstore user
+− Login to the edbstore database using the edbstore user and create the edbstore schema
+
+
+Lab Exercise - 2
+
+
+1. create database fdb
+2. create three users f01,f02,f03
+3. connect to fdb database with f01 user and create below objects
+
+
+SCHEMAS: f01_hr, f01_accounts
+
+
+TABLES :connect to f01_hr schema and create emp_hr(id int) table;
+
+
+TABLES :connect to f01_hr schema and create emp_admin(id int) table;
+
+
+TABLES : connect to f01_accounts schema and create emp_accounts(id int) table;
+
+
+4. GRANT PERMISSION TO f02 user to access only emp_hr table
+
+
+5. GRANT PERMISSION TO f03 user to access all tables in  f01_hr & f01_accounts 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DAY TWO
+
+
+TABLESPACE
+
+
+Pg_default —> base
+Pg_global —> global
+
+
+
+
+[root@localhost /]# su - postgres
+Last login: Wed Sep 14 12:37:40 IST 2022 on pts/0
+
+
+-bash-4.2$ 
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+
+
+-bash-4.2$ pg_ctl -D data start
+
+
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select oid,spcname from pg_tablespace;
+ oid  |  spcname   
+------+------------
+ 1663 | pg_default
+ 1664 | pg_global
+(2 rows)
+
+
+postgres=# \l+
+                                                                    List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |                Description                 
+-----------+----------+----------+-------------+-------------+-----------------------+---------+------------+--------------------------------------------
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | pg_default | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8833 kB | pg_default | default administrative connection database
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8777 kB | pg_default | 
+           |          |          |             |             | postgres=CTc/postgres+|         |            | 
+           |          |          |             |             | app01=C/postgres     +|         |            | 
+           |          |          |             |             | user01=C/postgres     |         |            | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | unmodifiable empty database
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | default template for new databases
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+(5 rows)
+
+
+postgres=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | sample | table | postgres
+(1 row)
+
+
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname='sample';
+ relfilenode | reltablespace | relname 
+-------------+---------------+---------
+       16386 |             0 | sample
+(1 row)
+
+
+postgres=# select oid,dattablespace, datname from pg_database;
+  oid  | dattablespace |  datname  
+-------+---------------+-----------
+ 14486 |          1663 | postgres
+ 16384 |          1663 | edbstore
+     1 |          1663 | template1
+ 14485 |          1663 | template0
+ 16385 |          1663 | salesdb
+(5 rows)
+
+
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/
+-bash-4.2$ 
+-bash-4.2$ ls
+1  14485  14486  16384  16385
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ exit
+logout
+[root@localhost /]# 
+[root@localhost /]# mkdir /ssd_drive
+[root@localhost /]# 
+[root@localhost /]# mkdir /ssd_drive/base2
+[root@localhost /]# 
+[root@localhost /]# chown postgres:postgres /ssd_drive/ -R
+
+
+[root@localhost /]# su - postgres
+Last login: Wed Sep 14 19:21:31 IST 2022 on pts/0
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# create tablespace tblspc location '/ssd_drive/base2';
+CREATE TABLESPACE
+postgres=# 
+postgres=# select oid,spcname from pg_tablespace;
+  oid  |  spcname   
+-------+------------
+  1663 | pg_default
+  1664 | pg_global
+ 16407 | tblspc
+(3 rows)
+
+
+postgres=# select oid,spcname,pg_tablespace_location(oid) from pg_tablespace;
+  oid  |  spcname   | pg_tablespace_location 
+-------+------------+------------------------
+  1663 | pg_default | 
+  1664 | pg_global  | 
+ 16407 | tblspc     | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# \db
+           List of tablespaces
+    Name    |  Owner   |     Location     
+------------+----------+------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+bash-4.2$ cd /db/pgsql/data/pg_tblspc/
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 19:49 16407 -> /ssd_drive/base2
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd /ssd_drive/base2/PG_14_202107181/
+-bash-4.2$ 
+-bash-4.2$ ls
+-bash-4.2$ 
+-bash-4.2$ 
+
+
+======================TABLESPACE LAB TWO WITH DB OBJECTS
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# select oid,spcname,pg_tablespace_location(oid) from pg_tablespace;
+  oid  |  spcname   | pg_tablespace_location 
+-------+------------+------------------------
+  1663 | pg_default | 
+  1664 | pg_global  | 
+ 16407 | tblspc     | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname='sample';
+ relfilenode | reltablespace | relname 
+-------------+---------------+---------
+       16386 |             0 | sample
+(1 row)
+
+
+postgres=# create table sales_2021(id int);
+CREATE TABLE
+postgres=# 
+postgres=# create table sales_2022(id int) tablespace tblspc ;
+CREATE TABLE
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |  relname   
+-------------+---------------+------------
+       16408 |             0 | sales_2021
+       16411 |         16407 | sales_2022
+(2 rows)
+
+
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /ssd_drive/base2/PG_14_202107181/14486/
+-bash-4.2$ 
+-bash-4.2$ ls
+16411
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# \l+
+                                                                    List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |             
+   Description                 
+-----------+----------+----------+-------------+-------------+-----------------------+---------+------------+-------------
+-------------------------------
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | pg_default | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8833 kB | pg_default | default admi
+nistrative connection database
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8777 kB | pg_default | 
+           |          |          |             |             | postgres=CTc/postgres+|         |            | 
+           |          |          |             |             | app01=C/postgres     +|         |            | 
+           |          |          |             |             | user01=C/postgres     |         |            | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | unmodifiable
+ empty database
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | default temp
+late for new databases
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+(5 rows)
+
+
+postgres=# create database inventory tablespace tblspc ;
+CREATE DATABASE
+postgres=# 
+postgres=# 
+postgres=# select oid,dattablespace, datname from pg_database;
+  oid  | dattablespace |  datname  
+-------+---------------+-----------
+ 14486 |          1663 | postgres
+ 16384 |          1663 | edbstore
+     1 |          1663 | template1
+ 14485 |          1663 | template0
+ 16385 |          1663 | salesdb
+ 16414 |         16407 | inventory
+(6 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd /ssd_drive/base2/PG_14_202107181/
+-bash-4.2$ 
+-bash-4.2$ ls
+14486  16414
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |  relname   
+-------------+---------------+------------
+       16408 |             0 | sales_2021
+       16411 |         16407 | sales_2022
+(2 rows)
+
+
+postgres=# create index sales_idx_2021 on sales_2021(id) tablespace tblspc ;
+CREATE INDEX
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |    relname     
+-------------+---------------+----------------
+       16408 |             0 | sales_2021
+       16411 |         16407 | sales_2022
+       16415 |         16407 | sales_idx_2021
+(3 rows)
+
+
+postgres=# alter table sales_2021 set tablespace tblspc ;
+ALTER TABLE
+postgres=# 
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |    relname     
+-------------+---------------+----------------
+       16416 |         16407 | sales_2021
+       16411 |         16407 | sales_2022
+       16415 |         16407 | sales_idx_2021
+(3 rows)
+
+
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# \l+
+                                                                    List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |                Description              
+   
+-----------+----------+----------+-------------+-------------+-----------------------+---------+------------+-----------------------------------------
+---
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | pg_default | 
+ inventory | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | tblspc     | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8841 kB | pg_default | default administrative connection databa
+se
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8777 kB | pg_default | 
+           |          |          |             |             | postgres=CTc/postgres+|         |            | 
+           |          |          |             |             | app01=C/postgres     +|         |            | 
+           |          |          |             |             | user01=C/postgres     |         |            | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | unmodifiable empty database
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | default template for new databases
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+(6 rows)
+
+
+postgres=# alter database salesdb tablespace tblspc;
+ALTER DATABASE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MOVING THE TABLESPACE 
+
+
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# \db
+           List of tablespaces
+    Name    |  Owner   |     Location     
+------------+----------+------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ stop
+waiting for server to shut down.... done
+server stopped
+-bash-4.2$ 
+-bash-4.2$ exit
+logout
+[root@localhost ~]# 
+[root@localhost ~]# mkdir /certfirst_drive
+[root@localhost ~]# 
+[root@localhost ~]# chown postgres:postgres /certfirst_drive/ -R
+[root@localhost ~]# 
+[root@localhost ~]# su - postgres
+Last login: Wed Sep 14 20:51:18 IST 2022 on pts/1
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd data/pg_tblspc/
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 19:49 16407 -> /ssd_drive/base2
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ mv /ssd_drive/base2/ /certfirst_drive/
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 19:49 16407 -> /ssd_drive/base2
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ ln -fs /certfirst_drive/base2/ 16407 
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 23 Sep 14 20:54 16407 -> /certfirst_drive/base2/
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ start
+waiting for server to start....2022-09-14 20:54:33.151 IST [24038] LOG:  redirecting log output to logging collector process
+2022-09-14 20:54:33.151 IST [24038] HINT:  Future log output will appear in directory "log".
+ done
+server started
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# \db
+               List of tablespaces
+    Name    |  Owner   |        Location         
+------------+----------+-------------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /certfirst_drive/base2/
+(3 rows)
+
+
+postgres=# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+======================================================================
+--------------CASE STUDY ON TABLESPACE-------------------
+======================================================================
+     
+CONNECT TO 5433 CLUSTER
+
+
+create two tablespace in below location
+
+
+/home/tbl1
+
+
+/home/tbl2
+
+
+create database db1 in tbl1 tablespace
+
+
+create database db2 in tbl2 tablespace
+
+
+connect to db1
+
+
+create employee table in tbl2 tablespace
+
+
+create index for employee table in tbl1 tablespace
+
+
+connect to db2
+
+
+create hr table in tbl1 tablespace
+
+
+create accounts table in tbl2 tablespace
+
+
+create index for accounts table in tbl2 tablespace
+
+
+FIND THE OID OF TABLES, TABLESPACE & DATABASE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+LOG MANAGEMENT
+
+
+
+
+bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+
+
+log_directory = 'certfirst_log' 
+
+
+log_filename = 'certfirst-postgresql-%a.log'   
+
+
+log_rotation_size = '10MB' 
+
+
+log_min_duration_statement = 2000
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../data/ restart
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show log_directory ;
+ log_directory 
+---------------
+ certfirst_log
+(1 row)
+
+
+postgres=# show log_filename ;
+        log_filename         
+-----------------------------
+ certfirst-postgresql-%a.log
+(1 row)
+
+
+postgres=# 
+postgres=# show log_min_duration_statement ;
+ log_min_duration_statement 
+----------------------------
+ 2s
+(1 row)
+
+
+postgres=# 
+
+
+postgres=# create table logmgmt (id int);
+CREATE TABLE
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,10000));
+INSERT 0 10000
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,100000));
+INSERT 0 100000
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,1000000));
+INSERT 0 1000000
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,100));
+INSERT 0 100
+
+
+
+
+
+
+==========================NEW TERMINAL
+
+
+[root@localhost ~]# tail -f /db/pgsql/data/certfirst_log/certfirst-postgresql-Wed.log 
+
+
+
+
+
+
+
+
+=============AUDITING LABS
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+log_line_prefix = '%t %a %u %d %r ' 
+
+
+log_statement = 'all'  
+
+
+log_connections = on
+
+
+log_duration = on
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../data/ restart
+
+
+
+
+
+
+
+
+
+
+
+
+-bash-4.2$ psql -p 5432 -U app01 -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=> create table test(id int);
+CREATE TABLE
+postgres=> 
+postgres=> \c postgres postgres
+You are now connected to database "postgres" as user "postgres".
+postgres=# 
+postgres=# drop table test;
+DROP TABLE
+
+
+
+
+==============NEW TERMINAL
+
+
+[root@localhost ~]# tail -f /db/pgsql/data/certfirst_log/certfirst-postgresql-Wed.log 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PGBADGER
+
+
+
+
+DOWNLOAD from below link :
+
+
+https://drive.google.com/file/d/10-u60S2ojqKQ0J30T7rn2xix3IMrhWh_/view?usp=sharing
+
+
+=======================PGBADGER STEPS
+
+
+cd /db/pgsql
+
+
+mkdir pgdata
+
+
+initdb -D pgdata
+
+
+cd pgdata
+
+
+vi postgresql.conf
+
+
+port=5436
+
+
+log_destination = 'stderr'                
+logging_collector = on                
+log_rotation_age = 0                        
+log_min_messages = warning
+log_min_error_statement = error
+log_min_duration_statement = 0
+log_checkpoints = on
+log_connections = on
+log_disconnections = on
+log_duration = on
+log_error_verbosity = verbose                
+log_hostname = on
+log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d '
+log_lock_waits = on                        
+log_statement = 'all'                
+log_temp_files = 0                
+
+
+:wq
+
+
+pg_ctl -D pgdata start
+
+
+-bash-4.1$ psql -p 5436
+
+
+create user u01 password '123456';
+
+
+create user hr password '123456';
+
+
+create user admin password '123456';
+
+
+create database db1;
+
+
+create database db2;
+
+
+create database db3;
+
+
+\c db1 u01
+
+
+create table tbl1 as select * from pg_class;
+
+
+select count(*) from tbl1;
+
+
+\c db2 hr
+
+
+create table tbl1 (id int);
+
+
+insert into tbl1 select * from generate_Series(1,100000) order by random();
+
+
+update tbl1 set id=1 where id between 1 and 100;
+
+
+\c db3 admin
+
+
+create table tbl1 (id int,name varchar);
+
+
+insert into tbl1 values(generate_Series(1,100000), 'postgres');
+
+
+delete from tbl1 where id between 1 and 6000;
+
+
+select count(*) from tbl1;
+
+
+\q
+
+
+
+
+[root@postgres Desktop]# cp pgbadger-master.zip /db/pgsql 
+
+
+[root@postgres]# cd /db/pgsql 
+
+
+[root@postgres]# unzip pgbadger-master.zip 
+
+
+[root@postgres]# cd pgbadger-master
+
+
+[root@postgres pgbadger-master]# 
+[root@postgres pgbadger-master]# ./pgbadger -f stderr -o report.html /db/pgsql/pgdata/log/postgresql-Tue.log 
+
+
+[root@postgres pgbadger-master]# ls
+ChangeLog  CONTRIBUTING.md  doc  LICENSE  Makefile.PL  MANIFEST  META.yml  pgbadger  README  report.html  tools
+
+
+
+
+open report.html in Linux->Firefox
+
+
+
+
+
+
+=============================================
+SECURITY
+
+
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ inventory | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +
+           |          |          |             |             | postgres=CTc/postgres+
+           |          |          |             |             | app01=C/postgres     +
+           |          |          |             |             | user01=C/postgres
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+(6 rows)
+
+
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ app01     |                                                            | {}
+ dbrole    | Cannot login                                               | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ testuser  |                                                            | {dbrole}
+ user01    |                                                            | {}
+ user02    |                                                            | {}
+
+
+postgres=# 
+postgres=# alter user postgres password '123456';
+
+
+
+
+======================PG_HBA.CONF
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi pg_hba.conf 
+
+
+local   edbstore        app01                           md5
+local   salesdb         user01                          md5
+local   inventory       user01                          trust
+local   postgres        postgres                        md5
+local   all             postgres                        reject
+
+
+:WQ
+
+
+-bash-4.2$ pg_ctl -D ../data/ reload
+
+
+
+
+-bash-4.2$ psql -p 5432 -U app01 -d edbstore
+Password for user app01: 
+psql (14.5)
+Type "help" for help.
+
+
+edbstore=> \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d edbstore
+
+
+==================================PGADMIN
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi pg_hba.conf 
+
+
+host    all             all             192.168.234.1/32        md5
+
+
+:WQ
+
+
+-bash-4.2$ vi postgresql.conf 
+
+
+listen_addresses = '*' 
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../data/ restart
+
+
+
+
+-bash-4.2$ exit
+logout
+[root@localhost ~]# systemctl stop firewalld
+
+
+[root@localhost ~]#su - postgres 
+
+
+-bash-4.2$ psql -p 5432
+Password for user postgres: 
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select pid,application_name,client_addr,query from pg_stat_activity;
+  pid  |    application_name     |  client_addr  |                                     query                                      
+-------+-------------------------+---------------+--------------------------------------------------------------------------------
+ 27938 |                         |               | 
+ 27936 |                         |               | 
+ 27998 | pgAdmin 4 - DB:postgres | 192.168.234.1 | SELECT                                                                        +
+       |                         |               |     db.oid as did, db.datname as name, ta.spcname as spcname, db.datallowconn,+
+       |                         |               |     has_database_privilege(db.oid, 'CREATE') as cancreate, datdba as owner    +
+       |                         |               | FROM                                                                          +
+       |                         |               |     pg_database db                                                            +
+       |                         |               |     LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace = ta.oid             +
+       |                         |               | WHERE db.oid > 14485::OID                                                     +
+       |                         |               |                                                                               +
+       |                         |               | ORDER BY datname;
+ 28017 | psql                    |               | select pid,application_name,client_addr,query from pg_stat_activity;
+ 27934 |                         |               | 
+ 27933 |                         |               | 
+ 27935 |                         |               | 
+(7 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CONFIGURATION
+
+
+
+
+postgres=# select context,name from pg_settings where name in('autovacuum','work_mem','shared_buffers');
+  context   |      name      
+------------+----------------
+ sighup     | autovacuum
+ postmaster | shared_buffers
+ user       | work_mem
+(3 rows)
+
+
+postgres=# show autovacuum;
+ autovacuum 
+------------
+ on
+(1 row)
+
+
+postgres=# alter system set autovacuum to off;
+ALTER SYSTEM
+postgres=# 
+postgres=# select pg_reload_conf();
+ pg_reload_conf 
+----------------
+ t
+(1 row)
+
+
+postgres=# 
+postgres=# show autovacuum;
+ autovacuum 
+------------
+ off
+(1 row)
+
+
+postgres=# alter system set shared_buffers to '256MB';
+ALTER SYSTEM
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ restart
+
+
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+Password for user postgres: 
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show shared_buffers ;
+ shared_buffers 
+----------------
+ 256MB
+(1 row)
+
+
+postgres=# 
+postgres=# set work_mem to '10MB';
+SET
+postgres=# 
+postgres=# show work_mem ;
+ work_mem 
+----------
+ 10MB
+(1 row)
+
+
+postgres=# \c
+You are now connected to database "postgres" as user "postgres".
+postgres=# 
+postgres=# 
+postgres=# show work_mem ;
+ work_mem 
+----------
+ 4MB
+(1 row)
+
+
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ app01     |                                                            | {}
+ dbrole    | Cannot login                                               | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ testuser  |                                                            | {dbrole}
+ user01    |                                                            | {}
+ user02    |                                                            | {}
+
+
+postgres=# 
+postgres=# alter user app01 set work_mem to '10MB';
+ALTER ROLE
+postgres=# 
+postgres=# \c postgres app01 
+connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  no pg_hba.conf entry for host "[local]", user "app01", database "postgres", no encryption
+Previous connection kept
+postgres=# 
+postgres=# \c edbstore app01 
+Password for user app01: 
+You are now connected to database "edbstore" as user "app01".
+edbstore=> 
+edbstore=> 
+edbstore=> show work_mem ;
+ work_mem 
+----------
+ 10MB
+(1 row)
+
+
+edbstore=> 
+
+
+
+
+=====================CASE STUDY
+
+
+1. Open psql and write a statement to change work_mem to 10MB. This change must persist across server restarts
+2. Open psql and write a statement to change work_mem to 20MB for the current session
+3. Open psql and write a statement to change work_mem to 1 MB for the postgres user
+4. Open the configuration file for your Postgres database cluster and make the following changes
+
+
+Maximum allowed connections to 50
+Shared buffers to 256 MB
+work_mem to 10 MB
+wal_buffers to 8MB
