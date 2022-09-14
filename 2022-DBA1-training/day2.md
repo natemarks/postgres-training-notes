@@ -312,5 +312,20 @@ db2=# select oid,spcname,pg_tablespace_location(oid) from pg_tablespace;
  16442 | tbl1       | /home/tbl1
 (5 rows)
 
+db2=# select oid,dattablespace, datname from pg_database;
+  oid  | dattablespace |  datname  
+-------+---------------+-----------
+ 13806 |          1663 | postgres
+     1 |          1663 | template1
+ 13805 |          1663 | template0
+ 16387 |          1663 | edbstore
+ 16412 |          1663 | fdb
+ 16438 |         16428 | inventory
+ 16392 |         16428 | salesdb
+ 16443 |         16442 | db1
+ 16444 |         16441 | db2
+(9 rows)
+
+
 
 ```
