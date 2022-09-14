@@ -329,3 +329,51 @@ db2=# select oid,dattablespace, datname from pg_database;
 
 
 ```
+
+
+## auditing LAB
+postgresql.conf
+```
+
+
+log_directory = 'certfirst_log' 
+
+log_filename = 'certfirst-postgresql-%a.log'   
+
+log_rotation_size = '10MB' 
+
+log_min_duration_statement = 2000
+
+
+```
+```
+postgres=# show log_directory;
+ log_directory 
+---------------
+ certfirst_log
+(1 row)
+
+postgres=# show log_filename ;
+        log_filename         
+-----------------------------
+ certfirst-postgresql-%a.log
+(1 row)
+
+postgres=# show log_min_duration_statement ;
+ log_min_duration_statement 
+----------------------------
+ 2s
+(1 row)
+
+postgres=# create table logmgmt (id int);
+CREATE TABLE
+postgres=# insert into logmgmt values(generate_series(1,10000));
+INSERT 0 10000
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,100000));
+INSERT 0 100000
+postgres=# insert into logmgmt values(generate_series(1,2000000));
+INSERT 0 2000000
+
+
+```
