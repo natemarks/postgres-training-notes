@@ -1,10 +1,11 @@
-# questions adn further research
+Is it possible to automatically profile the DB  activities (queries) of an application, then run that activity 10x and 100x against a test db
 
 can table partitioning be configured in RDS?
 can tablespaces be confgured on RDS?
 
-look up Db ACID
-
+map on prem AAA (postgresql.confg and pg_hba.conf) to RDS AAA:
+ - log attempts
+ - SG instead of RDS security config?
 validate replication/migration?
 
 measure performance?
