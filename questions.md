@@ -1,8 +1,8 @@
-Data discovery - what data to protyect in an instnace
+Data discovery - what data to protyect in an instnace (pg_dump -v)
 Data checkpointing -  how to roll back/recover data for migration testing 
  - test  by firing indexed data in that has timestamps
 How to manage test data for migration and upgrade testing
-How to profile query activity then simulate it. at 10x? at 100x
+How to profile query activity then simulate it. at 10x? at 100x (pgaudit)
 How to monitor performance
 can/should pgbouncer be used in rds?
 routine maintenance and monitoring thereof
@@ -10,7 +10,7 @@ Can we use pgbackrest for the upgrades using incremental/differential backups
 https://pgbackrest.org/
 Can we use pgdump to analyuze the data that needs to be protected?
 How to minimize mdown time for major engine upgrades
-
+How to inventory DDL for manual migration using pglogical
 drop/recreate index
 
 Is it possible to automatically profile the DB  activities (queries) of an application, then run that activity 10x and 100x against a test db
@@ -30,7 +30,7 @@ map on prem AAA (postgresql.confg and pg_hba.conf) to RDS AAA:
 validate replication/migration?
 
 measure performance?
-
+  
 care adn feeding -  indices, etc
 
 postgres llogging in aws?

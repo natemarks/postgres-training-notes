@@ -1,0 +1,5289 @@
+﻿https://tinyurl.com/pgsqlcertfirst
+
+
+====================INSTALLATION METHODS
+
+
+YUM INSTALL 
+RPM
+SOURCE
+BINARY --------> enterprisedb.com (commerical)
+
+
+=======================DOWNLOAD AND INSTALL 
+
+
+[root@localhost ~]# whoami 
+root
+
+
+[root@localhost]# yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+
+
+
+[root@localhost ~]# yum install postgresql14-server
+
+
+
+
+===============HOME PATH FOR USER "postgres"
+
+
+[root@localhost ~]# mkdir /db
+[root@localhost ~]# 
+[root@localhost ~]# mkdir /db/pgsql
+[root@localhost ~]# 
+[root@localhost ~]# cp /root/.bash_profile /db/pgsql/ 
+[root@localhost ~]# 
+[root@localhost ~]# vi /etc/passwd
+
+
+postgres:x:1001:1001:PostgreSQL:/db/pgsql:/bin/bash
+
+
+:wq
+
+
+[root@localhost ~]# cd /db/pgsql/
+[root@localhost pgsql]# 
+[root@localhost pgsql]# vi .bash_profile 
+
+
+
+
+# .bash_profile
+
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+
+
+# User specific environment and startup programs
+
+
+PATH=$PATH:$HOME/bin
+export PATH=/usr/pgsql-14/bin:$PATH
+export PATH
+
+
+:WQ
+
+
+[root@localhost pgsql]# chown postgres:postgres /usr/pgsql-14/ -R
+[root@localhost pgsql]# 
+[root@localhost pgsql]# chown postgres:postgres /db/pgsql/ -R
+
+
+
+
+[root@localhost pgsql]# su - postgres
+Last login: Tue Sep 13 14:36:15 IST 2022 on pts/1
+-bash-4.2$ 
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ psql --version
+psql (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ initdb --version
+initdb (PostgreSQL) 14.5
+
+
+====================================
+
+
+==============================
+
+
+CREATING NEW INSTANCE / CLUSTER
+
+
+Steps :
+
+
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ mkdir data
+-bash-4.2$ 
+-bash-4.2$ initdb --version
+initdb (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ initdb -D data
+
+
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ ls
+
+
+-bash-4.2$ vi postgresql.conf 
+
+
+port = 5432
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ start
+waiting for server to start....2022-09-13 21:21:11.829 IST [10936] LOG:  redirecting log output to logging collector process
+2022-09-13 21:21:11.829 IST [10936] HINT:  Future log output will appear in directory "log".
+ done
+server started
+-bash-4.2$ 
+-bash-4.2$ netstat -pant | grep postgres
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+tcp        0      0 127.0.0.1:5432          0.0.0.0:*               LISTEN      10936/postgres      
+tcp6       0      0 ::1:5432                :::*                    LISTEN      10936/postgres   
+
+
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+ data_directory 
+----------------
+ /db/pgsql/data
+(1 row)
+
+
+postgres=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ template1
+ template0
+(3 rows)
+
+
+postgres=# \conninfo
+You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+postgres=# 
+
+
+
+
+
+
+
+
+
+
+
+
+=======================CREATING AND MANAGING DATABASE 
+
+
+postgres=# \conninfo
+You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# create database edbstore;
+CREATE DATABASE
+postgres=# 
+postgres=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ edbstore
+ template1
+ template0
+(4 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ createdb -p 5432 -U postgres salesdb
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# 
+salesdb=# select datname from pg_database;
+  datname  
+-----------
+ postgres
+ edbstore
+ template1
+ template0
+ salesdb
+(5 rows)
+
+
+salesdb=# show data_directory;
+ data_directory 
+----------------
+ /db/pgsql/data
+(1 row)
+
+
+
+
+salesdb=# select oid,datname from pg_database;
+  oid  |  datname  
+-------+-----------
+ 14486 | postgres
+ 16384 | edbstore
+     1 | template1
+ 14485 | template0
+ 16385 | salesdb
+(5 rows)
+
+
+salesdb=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/
+-bash-4.2$ 
+-bash-4.2$ ls
+1  14485  14486  16384  16385
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==========================DATAFILE 
+
+
+-bash-4.2$ whoami 
+postgres
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# select current_schemas(true);
+   current_schemas   
+---------------------
+ {pg_catalog,public}
+(1 row)
+
+
+postgres=# select current_database();
+ current_database 
+------------------
+ postgres
+(1 row)
+
+
+postgres=# show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+postgres=# create table sample(id int,name varchar(10));
+CREATE TABLE
+postgres=# 
+postgres=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | sample | table | postgres
+(1 row)
+
+
+postgres=# select relfilenode,relname from pg_class where relname='sample';
+ relfilenode | relname 
+-------------+---------
+       16386 | sample
+(1 row)
+
+
+postgres=# 
+
+
+
+
+
+
+
+
+postgres=# select oid,datname from pg_database;
+  oid  |  datname  
+-------+-----------
+ 14486 | postgres
+ 16384 | edbstore
+     1 | template1
+ 14485 | template0
+ 16385 | salesdb
+(5 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/14486/
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+0        16386
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres -c "insert into sample values(1,'postgres');"
+INSERT 0 1
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+8.0K        16386
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres -c "insert into sample values(generate_Series(2,200),'postgres');"
+INSERT 0 199
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ du -sh 16386
+16K        16386
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select relpages,reltuples from pg_Class where relname='sample';
+ relpages | reltuples 
+----------+-----------
+        0 |        -1
+(1 row)
+
+
+postgres=# 
+postgres=# analyze sample ;
+ANALYZE
+postgres=# 
+
+
+
+
+postgres=# select relpages,reltuples from pg_Class where relname='sample';
+ relpages | reltuples 
+----------+-----------
+        2 |       200
+(1 row)
+
+
+========================CASE STUDY
+
+
+1. CREATE edbstore DIRECTORY under /opt
+
+
+2. chown to postgres to edbstore
+
+
+3. create cluster using edbstore directory
+
+
+4. change the edbstore cluster port to 5433 (postgresql.conf => "port=5432" remove #)
+
+
+5. start the edbstore cluster
+
+
+6. connect to edbstore cluster
+
+
+7. create database edbstore;
+
+
+8. connect to edbstore as postgres user
+
+
+9. create table employee(id int) under edbstore 
+
+
+10. find the physical location of edbstore database and employee table
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PUBLIC SCHEMA AND USERS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# 
+salesdb=# create user app01 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ app01     |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+
+
+salesdb=# \dt
+Did not find any relations.
+salesdb=# 
+salesdb=# \conninfo
+You are connected to database "salesdb" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+salesdb=# 
+salesdb=# show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=# create table sales_q1_2022(qtr char(2), report char(10));
+CREATE TABLE
+salesdb=# 
+salesdb=# \dt
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ public | sales_q1_2022 | table | postgres
+(1 row)
+
+
+salesdb=# \c salesdb app01 
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> 
+salesdb=> \dt
+             List of relations
+ Schema |     Name      | Type  |  Owner   
+--------+---------------+-------+----------
+ public | sales_q1_2022 | table | postgres
+(1 row)
+
+
+salesdb=> select * from sales_q1_2022 ;
+ERROR:  permission denied for table sales_q1_2022
+salesdb=> 
+salesdb=> 
+salesdb=> \c salesdb postgres 
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# 
+salesdb=# grant select on all tables in schema public to app01 ;
+GRANT
+salesdb=# 
+salesdb=# 
+salesdb=# \c salesdb app01
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> 
+salesdb=> select * from sales_q1_2022 ;
+ qtr | report 
+-----+--------
+(0 rows)
+
+
+salesdb=> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PRIVATE SCHEMA AND USERS
+
+
+
+
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# create user user01 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# create user user02 password '123456';
+CREATE ROLE
+salesdb=# 
+salesdb=# grant create on database salesdb to user01;
+GRANT
+salesdb=# 
+salesdb=# create schema accounts authorization user02;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# \dn
+   List of schemas
+   Name   |  Owner   
+----------+----------
+ accounts | user02
+ public   | postgres
+(2 rows)
+
+
+salesdb=# \c salesdb user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> create schema hr;
+CREATE SCHEMA
+salesdb=> 
+salesdb=> 
+salesdb=> \dn
+   List of schemas
+   Name   |  Owner   
+----------+----------
+ accounts | user02
+ hr       | user01
+ public   | postgres
+(3 rows)
+
+
+salesdb=> 
+salesdb=> \c salesdb user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> create table empinfo(empid int, empname varchar(10));
+CREATE TABLE
+salesdb=> 
+salesdb=> \dt
+         List of relations
+ Schema |  Name   | Type  | Owner  
+--------+---------+-------+--------
+ hr     | empinfo | table | user01
+(1 row)
+
+
+salesdb=> \c - postgres
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# alter user user01 set search_path to hr;
+ALTER ROLE
+salesdb=# 
+salesdb=# 
+salesdb=# \c - app01 
+You are now connected to database "salesdb" as user "app01".
+salesdb=> 
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> 
+salesdb=> \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> 
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> 
+salesdb=> create table inventory(prodid int,prodname varchar(10));
+CREATE TABLE
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ROLES AND USERS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# create role dbrole;
+CREATE ROLE
+salesdb=# 
+salesdb=# create schema prod authorization dbrole;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# 
+salesdb=# set role dbrole ;
+SET
+salesdb=> show search_path ;
+   search_path   
+-----------------
+ "$user", public
+(1 row)
+
+
+salesdb=> \c - postgres
+You are now connected to database "salesdb" as user "postgres".
+salesdb=# 
+salesdb=# 
+salesdb=# alter role dbrole set search_path to prod ;
+ALTER ROLE
+salesdb=# 
+salesdb=# create user testuser;
+CREATE ROLE
+salesdb=# 
+salesdb=# create schema inventory authorization testuser;
+CREATE SCHEMA
+salesdb=# 
+salesdb=# alter user testuser set search_path to inventory;
+ALTER ROLE
+salesdb=# 
+salesdb=# grant dbrole to testuser ;
+GRANT ROLE
+salesdb=# 
+salesdb=# \c salesdb testuser 
+You are now connected to database "salesdb" as user "testuser".
+salesdb=> 
+salesdb=> show search_path ;
+ search_path 
+-------------
+ inventory
+(1 row)
+GRANT PERMISSIONS
+
+
+-bash-4.2$ psql -p 5432 -U postgres -d salesdb
+psql (14.5)
+Type "help" for help.
+
+
+salesdb=# \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> 
+salesdb=> \c salesdb user02 
+You are now connected to database "salesdb" as user "user02".
+salesdb=> 
+salesdb=> \dn
+   List of schemas
+   Name    |  Owner   
+-----------+----------
+ accounts  | user02
+ hr        | user01
+ inventory | testuser
+ prod      | dbrole
+ public    | postgres
+(5 rows)
+
+
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> \dt
+Did not find any relations.
+salesdb=> 
+salesdb=> 
+salesdb=> 
+salesdb=> \c - user01
+You are now connected to database "salesdb" as user "user01".
+salesdb=> 
+salesdb=> 
+salesdb=> grant USAGE on SCHEMA hr to user02;
+GRANT
+salesdb=> 
+salesdb=> grant select on all tables in schema hr to user02;
+GRANT
+salesdb=> 
+salesdb=> 
+salesdb=> 
+salesdb=> \c - user02
+You are now connected to database "salesdb" as user "user02".
+salesdb=> 
+salesdb=> 
+salesdb=> set search_path to hr;
+SET
+salesdb=> 
+salesdb=> \dt
+          List of relations
+ Schema |   Name    | Type  | Owner  
+--------+-----------+-------+--------
+ hr     | empinfo   | table | user01
+ hr     | inventory | table | user01
+(2 rows)
+
+
+salesdb=> select count(*) from empinfo ;
+ count 
+-------
+     0
+(1 row)
+
+
+salesdb=> show search_path ;
+ search_path 
+-------------
+ hr
+(1 row)
+
+
+salesdb=> 
+salesdb=> create table test(id int);
+ERROR:  permission denied for schema hr
+LINE 1: create table test(id int);
+                     ^
+salesdb=> 
+salesdb=> 
+
+
+
+
+
+
+
+
+======================================================================
+------------------------CASE STUDY ON SCHEMA -----------------------
+======================================================================
+
+
+
+
+Lab Exercise - 1
+
+
+1. A new website is to be developed for an online music store.
+− Create a database user edbstore in your existing cluster
+− Create an edbstore database with ownership of edbstore user
+− Login to the edbstore database using the edbstore user and create the edbstore schema
+
+
+Lab Exercise - 2
+
+
+1. create database fdb
+2. create three users f01,f02,f03
+3. connect to fdb database with f01 user and create below objects
+
+
+SCHEMAS: f01_hr, f01_accounts
+
+
+TABLES :connect to f01_hr schema and create emp_hr(id int) table;
+
+
+TABLES :connect to f01_hr schema and create emp_admin(id int) table;
+
+
+TABLES : connect to f01_accounts schema and create emp_accounts(id int) table;
+
+
+4. GRANT PERMISSION TO f02 user to access only emp_hr table
+
+
+5. GRANT PERMISSION TO f03 user to access all tables in  f01_hr & f01_accounts 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DAY TWO
+
+
+TABLESPACE
+
+
+Pg_default —> base
+Pg_global —> global
+
+
+
+
+[root@localhost /]# su - postgres
+Last login: Wed Sep 14 12:37:40 IST 2022 on pts/0
+
+
+-bash-4.2$ 
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+
+
+-bash-4.2$ pg_ctl -D data start
+
+
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select oid,spcname from pg_tablespace;
+ oid  |  spcname   
+------+------------
+ 1663 | pg_default
+ 1664 | pg_global
+(2 rows)
+
+
+postgres=# \l+
+                                                                    List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |                Description                 
+-----------+----------+----------+-------------+-------------+-----------------------+---------+------------+--------------------------------------------
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | pg_default | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8833 kB | pg_default | default administrative connection database
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8777 kB | pg_default | 
+           |          |          |             |             | postgres=CTc/postgres+|         |            | 
+           |          |          |             |             | app01=C/postgres     +|         |            | 
+           |          |          |             |             | user01=C/postgres     |         |            | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | unmodifiable empty database
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | default template for new databases
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+(5 rows)
+
+
+postgres=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | sample | table | postgres
+(1 row)
+
+
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname='sample';
+ relfilenode | reltablespace | relname 
+-------------+---------------+---------
+       16386 |             0 | sample
+(1 row)
+
+
+postgres=# select oid,dattablespace, datname from pg_database;
+  oid  | dattablespace |  datname  
+-------+---------------+-----------
+ 14486 |          1663 | postgres
+ 16384 |          1663 | edbstore
+     1 |          1663 | template1
+ 14485 |          1663 | template0
+ 16385 |          1663 | salesdb
+(5 rows)
+
+
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/data/base/
+-bash-4.2$ 
+-bash-4.2$ ls
+1  14485  14486  16384  16385
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ exit
+logout
+[root@localhost /]# 
+[root@localhost /]# mkdir /ssd_drive
+[root@localhost /]# 
+[root@localhost /]# mkdir /ssd_drive/base2
+[root@localhost /]# 
+[root@localhost /]# chown postgres:postgres /ssd_drive/ -R
+
+
+[root@localhost /]# su - postgres
+Last login: Wed Sep 14 19:21:31 IST 2022 on pts/0
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# create tablespace tblspc location '/ssd_drive/base2';
+CREATE TABLESPACE
+postgres=# 
+postgres=# select oid,spcname from pg_tablespace;
+  oid  |  spcname   
+-------+------------
+  1663 | pg_default
+  1664 | pg_global
+ 16407 | tblspc
+(3 rows)
+
+
+postgres=# select oid,spcname,pg_tablespace_location(oid) from pg_tablespace;
+  oid  |  spcname   | pg_tablespace_location 
+-------+------------+------------------------
+  1663 | pg_default | 
+  1664 | pg_global  | 
+ 16407 | tblspc     | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# \db
+           List of tablespaces
+    Name    |  Owner   |     Location     
+------------+----------+------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+bash-4.2$ cd /db/pgsql/data/pg_tblspc/
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 19:49 16407 -> /ssd_drive/base2
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd /ssd_drive/base2/PG_14_202107181/
+-bash-4.2$ 
+-bash-4.2$ ls
+-bash-4.2$ 
+-bash-4.2$ 
+
+
+======================TABLESPACE LAB TWO WITH DB OBJECTS
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# select oid,spcname,pg_tablespace_location(oid) from pg_tablespace;
+  oid  |  spcname   | pg_tablespace_location 
+-------+------------+------------------------
+  1663 | pg_default | 
+  1664 | pg_global  | 
+ 16407 | tblspc     | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname='sample';
+ relfilenode | reltablespace | relname 
+-------------+---------------+---------
+       16386 |             0 | sample
+(1 row)
+
+
+postgres=# create table sales_2021(id int);
+CREATE TABLE
+postgres=# 
+postgres=# create table sales_2022(id int) tablespace tblspc ;
+CREATE TABLE
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |  relname   
+-------------+---------------+------------
+       16408 |             0 | sales_2021
+       16411 |         16407 | sales_2022
+(2 rows)
+
+
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /ssd_drive/base2/PG_14_202107181/14486/
+-bash-4.2$ 
+-bash-4.2$ ls
+16411
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# \l+
+                                                                    List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |             
+   Description                 
+-----------+----------+----------+-------------+-------------+-----------------------+---------+------------+-------------
+-------------------------------
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | pg_default | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8833 kB | pg_default | default admi
+nistrative connection database
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8777 kB | pg_default | 
+           |          |          |             |             | postgres=CTc/postgres+|         |            | 
+           |          |          |             |             | app01=C/postgres     +|         |            | 
+           |          |          |             |             | user01=C/postgres     |         |            | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | unmodifiable
+ empty database
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | default temp
+late for new databases
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+(5 rows)
+
+
+postgres=# create database inventory tablespace tblspc ;
+CREATE DATABASE
+postgres=# 
+postgres=# 
+postgres=# select oid,dattablespace, datname from pg_database;
+  oid  | dattablespace |  datname  
+-------+---------------+-----------
+ 14486 |          1663 | postgres
+ 16384 |          1663 | edbstore
+     1 |          1663 | template1
+ 14485 |          1663 | template0
+ 16385 |          1663 | salesdb
+ 16414 |         16407 | inventory
+(6 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd /ssd_drive/base2/PG_14_202107181/
+-bash-4.2$ 
+-bash-4.2$ ls
+14486  16414
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |  relname   
+-------------+---------------+------------
+       16408 |             0 | sales_2021
+       16411 |         16407 | sales_2022
+(2 rows)
+
+
+postgres=# create index sales_idx_2021 on sales_2021(id) tablespace tblspc ;
+CREATE INDEX
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |    relname     
+-------------+---------------+----------------
+       16408 |             0 | sales_2021
+       16411 |         16407 | sales_2022
+       16415 |         16407 | sales_idx_2021
+(3 rows)
+
+
+postgres=# alter table sales_2021 set tablespace tblspc ;
+ALTER TABLE
+postgres=# 
+postgres=# 
+postgres=# select relfilenode,reltablespace,relname from pg_Class where relname like 'sales%';
+ relfilenode | reltablespace |    relname     
+-------------+---------------+----------------
+       16416 |         16407 | sales_2021
+       16411 |         16407 | sales_2022
+       16415 |         16407 | sales_idx_2021
+(3 rows)
+
+
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# \l+
+                                                                    List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |                Description              
+   
+-----------+----------+----------+-------------+-------------+-----------------------+---------+------------+-----------------------------------------
+---
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | pg_default | 
+ inventory | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8617 kB | tblspc     | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 8841 kB | pg_default | default administrative connection databa
+se
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +| 8777 kB | pg_default | 
+           |          |          |             |             | postgres=CTc/postgres+|         |            | 
+           |          |          |             |             | app01=C/postgres     +|         |            | 
+           |          |          |             |             | user01=C/postgres     |         |            | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | unmodifiable empty database
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 8617 kB | pg_default | default template for new databases
+           |          |          |             |             | postgres=CTc/postgres |         |            | 
+(6 rows)
+
+
+postgres=# alter database salesdb tablespace tblspc;
+ALTER DATABASE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MOVING THE TABLESPACE 
+
+
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# \db
+           List of tablespaces
+    Name    |  Owner   |     Location     
+------------+----------+------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /ssd_drive/base2
+(3 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ stop
+waiting for server to shut down.... done
+server stopped
+-bash-4.2$ 
+-bash-4.2$ exit
+logout
+[root@localhost ~]# 
+[root@localhost ~]# mkdir /certfirst_drive
+[root@localhost ~]# 
+[root@localhost ~]# chown postgres:postgres /certfirst_drive/ -R
+[root@localhost ~]# 
+[root@localhost ~]# su - postgres
+Last login: Wed Sep 14 20:51:18 IST 2022 on pts/1
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd data/pg_tblspc/
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 19:49 16407 -> /ssd_drive/base2
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ mv /ssd_drive/base2/ /certfirst_drive/
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 16 Sep 14 19:49 16407 -> /ssd_drive/base2
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ ln -fs /certfirst_drive/base2/ 16407 
+-bash-4.2$ 
+-bash-4.2$ ls -lrt
+total 0
+lrwxrwxrwx. 1 postgres postgres 23 Sep 14 20:54 16407 -> /certfirst_drive/base2/
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ start
+waiting for server to start....2022-09-14 20:54:33.151 IST [24038] LOG:  redirecting log output to logging collector process
+2022-09-14 20:54:33.151 IST [24038] HINT:  Future log output will appear in directory "log".
+ done
+server started
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# \db
+               List of tablespaces
+    Name    |  Owner   |        Location         
+------------+----------+-------------------------
+ pg_default | postgres | 
+ pg_global  | postgres | 
+ tblspc     | postgres | /certfirst_drive/base2/
+(3 rows)
+
+
+postgres=# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+======================================================================
+--------------CASE STUDY ON TABLESPACE-------------------
+======================================================================
+     
+CONNECT TO 5433 CLUSTER
+
+
+create two tablespace in below location
+
+
+/home/tbl1
+
+
+/home/tbl2
+
+
+create database db1 in tbl1 tablespace
+
+
+create database db2 in tbl2 tablespace
+
+
+connect to db1
+
+
+create employee table in tbl2 tablespace
+
+
+create index for employee table in tbl1 tablespace
+
+
+connect to db2
+
+
+create hr table in tbl1 tablespace
+
+
+create accounts table in tbl2 tablespace
+
+
+create index for accounts table in tbl2 tablespace
+
+
+FIND THE OID OF TABLES, TABLESPACE & DATABASE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+LOG MANAGEMENT
+
+
+
+
+bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+
+
+log_directory = 'certfirst_log' 
+
+
+log_filename = 'certfirst-postgresql-%a.log'   
+
+
+log_rotation_size = '10MB' 
+
+
+log_min_duration_statement = 2000
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../data/ restart
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show log_directory ;
+ log_directory 
+---------------
+ certfirst_log
+(1 row)
+
+
+postgres=# show log_filename ;
+        log_filename         
+-----------------------------
+ certfirst-postgresql-%a.log
+(1 row)
+
+
+postgres=# 
+postgres=# show log_min_duration_statement ;
+ log_min_duration_statement 
+----------------------------
+ 2s
+(1 row)
+
+
+postgres=# 
+
+
+postgres=# create table logmgmt (id int);
+CREATE TABLE
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,10000));
+INSERT 0 10000
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,100000));
+INSERT 0 100000
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,1000000));
+INSERT 0 1000000
+postgres=# 
+postgres=# insert into logmgmt values(generate_series(1,100));
+INSERT 0 100
+
+
+
+
+
+
+==========================NEW TERMINAL
+
+
+[root@localhost ~]# tail -f /db/pgsql/data/certfirst_log/certfirst-postgresql-Wed.log 
+
+
+
+
+
+
+
+
+=============AUDITING LABS
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+log_line_prefix = '%t %a %u %d %r ' 
+
+
+log_statement = 'all'  
+
+
+log_connections = on
+
+
+log_duration = on
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../data/ restart
+
+
+
+
+
+
+
+
+
+
+
+
+-bash-4.2$ psql -p 5432 -U app01 -d postgres
+psql (14.5)
+Type "help" for help.
+
+
+postgres=> create table test(id int);
+CREATE TABLE
+postgres=> 
+postgres=> \c postgres postgres
+You are now connected to database "postgres" as user "postgres".
+postgres=# 
+postgres=# drop table test;
+DROP TABLE
+
+
+
+
+==============NEW TERMINAL
+
+
+[root@localhost ~]# tail -f /db/pgsql/data/certfirst_log/certfirst-postgresql-Wed.log 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PGBADGER
+
+
+
+
+DOWNLOAD from below link :
+
+
+https://drive.google.com/file/d/10-u60S2ojqKQ0J30T7rn2xix3IMrhWh_/view?usp=sharing
+
+
+=======================PGBADGER STEPS
+
+
+cd /db/pgsql
+
+
+mkdir pgdata
+
+
+initdb -D pgdata
+
+
+cd pgdata
+
+
+vi postgresql.conf
+
+
+port=5436
+
+
+log_destination = 'stderr'                
+logging_collector = on                
+log_rotation_age = 0                        
+log_min_messages = warning
+log_min_error_statement = error
+log_min_duration_statement = 0
+log_checkpoints = on
+log_connections = on
+log_disconnections = on
+log_duration = on
+log_error_verbosity = verbose                
+log_hostname = on
+log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d '
+log_lock_waits = on                        
+log_statement = 'all'                
+log_temp_files = 0                
+
+
+:wq
+
+
+pg_ctl -D pgdata start
+
+
+-bash-4.1$ psql -p 5436
+
+
+create user u01 password '123456';
+
+
+create user hr password '123456';
+
+
+create user admin password '123456';
+
+
+create database db1;
+
+
+create database db2;
+
+
+create database db3;
+
+
+\c db1 u01
+
+
+create table tbl1 as select * from pg_class;
+
+
+select count(*) from tbl1;
+
+
+\c db2 hr
+
+
+create table tbl1 (id int);
+
+
+insert into tbl1 select * from generate_Series(1,100000) order by random();
+
+
+update tbl1 set id=1 where id between 1 and 100;
+
+
+\c db3 admin
+
+
+create table tbl1 (id int,name varchar);
+
+
+insert into tbl1 values(generate_Series(1,100000), 'postgres');
+
+
+delete from tbl1 where id between 1 and 6000;
+
+
+select count(*) from tbl1;
+
+
+\q
+
+
+
+
+[root@postgres Desktop]# cp pgbadger-master.zip /db/pgsql 
+
+
+[root@postgres]# cd /db/pgsql 
+
+
+[root@postgres]# unzip pgbadger-master.zip 
+
+
+[root@postgres]# cd pgbadger-master
+
+
+[root@postgres pgbadger-master]# 
+[root@postgres pgbadger-master]# ./pgbadger -f stderr -o report.html /db/pgsql/pgdata/log/postgresql-Tue.log 
+
+
+[root@postgres pgbadger-master]# ls
+ChangeLog  CONTRIBUTING.md  doc  LICENSE  Makefile.PL  MANIFEST  META.yml  pgbadger  README  report.html  tools
+
+
+
+
+open report.html in Linux->Firefox
+
+
+
+
+
+
+=============================================
+SECURITY
+
+
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ edbstore  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ inventory | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ salesdb   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =Tc/postgres         +
+           |          |          |             |             | postgres=CTc/postgres+
+           |          |          |             |             | app01=C/postgres     +
+           |          |          |             |             | user01=C/postgres
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+(6 rows)
+
+
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ app01     |                                                            | {}
+ dbrole    | Cannot login                                               | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ testuser  |                                                            | {dbrole}
+ user01    |                                                            | {}
+ user02    |                                                            | {}
+
+
+postgres=# 
+postgres=# alter user postgres password '123456';
+
+
+
+
+======================PG_HBA.CONF
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi pg_hba.conf 
+
+
+local   edbstore        app01                           md5
+local   salesdb         user01                          md5
+local   inventory       user01                          trust
+local   postgres        postgres                        md5
+local   all             postgres                        reject
+
+
+:WQ
+
+
+-bash-4.2$ pg_ctl -D ../data/ reload
+
+
+
+
+-bash-4.2$ psql -p 5432 -U app01 -d edbstore
+Password for user app01: 
+psql (14.5)
+Type "help" for help.
+
+
+edbstore=> \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432 -U postgres -d edbstore
+
+
+==================================PGADMIN
+
+
+-bash-4.2$ cd data/
+-bash-4.2$ 
+-bash-4.2$ vi pg_hba.conf 
+
+
+host    all             all             192.168.234.1/32        md5
+
+
+:WQ
+
+
+-bash-4.2$ vi postgresql.conf 
+
+
+listen_addresses = '*' 
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../data/ restart
+
+
+
+
+-bash-4.2$ exit
+logout
+[root@localhost ~]# systemctl stop firewalld
+
+
+[root@localhost ~]#su - postgres 
+
+
+-bash-4.2$ psql -p 5432
+Password for user postgres: 
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select pid,application_name,client_addr,query from pg_stat_activity;
+  pid  |    application_name     |  client_addr  |                                     query                                      
+-------+-------------------------+---------------+--------------------------------------------------------------------------------
+ 27938 |                         |               | 
+ 27936 |                         |               | 
+ 27998 | pgAdmin 4 - DB:postgres | 192.168.234.1 | SELECT                                                                        +
+       |                         |               |     db.oid as did, db.datname as name, ta.spcname as spcname, db.datallowconn,+
+       |                         |               |     has_database_privilege(db.oid, 'CREATE') as cancreate, datdba as owner    +
+       |                         |               | FROM                                                                          +
+       |                         |               |     pg_database db                                                            +
+       |                         |               |     LEFT OUTER JOIN pg_tablespace ta ON db.dattablespace = ta.oid             +
+       |                         |               | WHERE db.oid > 14485::OID                                                     +
+       |                         |               |                                                                               +
+       |                         |               | ORDER BY datname;
+ 28017 | psql                    |               | select pid,application_name,client_addr,query from pg_stat_activity;
+ 27934 |                         |               | 
+ 27933 |                         |               | 
+ 27935 |                         |               | 
+(7 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CONFIGURATION
+
+
+
+
+postgres=# select context,name from pg_settings where name in('autovacuum','work_mem','shared_buffers');
+  context   |      name      
+------------+----------------
+ sighup     | autovacuum
+ postmaster | shared_buffers
+ user       | work_mem
+(3 rows)
+
+
+postgres=# show autovacuum;
+ autovacuum 
+------------
+ on
+(1 row)
+
+
+postgres=# alter system set autovacuum to off;
+ALTER SYSTEM
+postgres=# 
+postgres=# select pg_reload_conf();
+ pg_reload_conf 
+----------------
+ t
+(1 row)
+
+
+postgres=# 
+postgres=# show autovacuum;
+ autovacuum 
+------------
+ off
+(1 row)
+
+
+postgres=# alter system set shared_buffers to '256MB';
+ALTER SYSTEM
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/data/ restart
+
+
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 5432
+Password for user postgres: 
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show shared_buffers ;
+ shared_buffers 
+----------------
+ 256MB
+(1 row)
+
+
+postgres=# 
+postgres=# set work_mem to '10MB';
+SET
+postgres=# 
+postgres=# show work_mem ;
+ work_mem 
+----------
+ 10MB
+(1 row)
+
+
+postgres=# \c
+You are now connected to database "postgres" as user "postgres".
+postgres=# 
+postgres=# 
+postgres=# show work_mem ;
+ work_mem 
+----------
+ 4MB
+(1 row)
+
+
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ app01     |                                                            | {}
+ dbrole    | Cannot login                                               | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ testuser  |                                                            | {dbrole}
+ user01    |                                                            | {}
+ user02    |                                                            | {}
+
+
+postgres=# 
+postgres=# alter user app01 set work_mem to '10MB';
+ALTER ROLE
+postgres=# 
+postgres=# \c postgres app01 
+connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  no pg_hba.conf entry for host "[local]", user "app01", database "postgres", no encryption
+Previous connection kept
+postgres=# 
+postgres=# \c edbstore app01 
+Password for user app01: 
+You are now connected to database "edbstore" as user "app01".
+edbstore=> 
+edbstore=> 
+edbstore=> show work_mem ;
+ work_mem 
+----------
+ 10MB
+(1 row)
+
+
+edbstore=> 
+
+
+
+
+=====================CASE STUDY
+
+
+1. Open psql and write a statement to change work_mem to 10MB. This change must persist across server restarts
+2. Open psql and write a statement to change work_mem to 20MB for the current session
+3. Open psql and write a statement to change work_mem to 1 MB for the postgres user
+4. Open the configuration file for your Postgres database cluster and make the following changes
+
+
+Maximum allowed connections to 50
+Shared buffers to 256 MB
+work_mem to 10 MB
+wal_buffers to 8MB
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DAY THREE
+
+
+=======CONTINOUS ARCHIVING AND ONLINE BACKUP 
+
+
+-bash-4.2$ pwd
+/db/pgsql
+
+
+-bash-4.2$ mkdir prod
+-bash-4.2$ 
+-bash-4.2$ mkdir prodarchive
+-bash-4.2$ 
+-bash-4.2$ mkdir prodbkp
+
+
+-bash-4.2$ initdb -D prod
+
+
+-bash-4.2$ cd prod
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+listen_addresses = '*'
+port = 5001  
+
+
+:WQ
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/prod start
+
+
+-bash-4.2$ psql -p 5001
+
+
+
+
+
+
+postgres=# show data_directory;
+   data_directory   
+--------------------
+ /db/pgsql/prod
+(1 row)
+
+
+postgres=# create table tbl1 as select * from pg_class;
+SELECT 395
+postgres=# 
+postgres=# create table tbl2 as select * from pg_description;
+SELECT 4588
+postgres=# 
+postgres=# create table tbl3 as select * from pg_description,pg_class;
+SELECT 1839788
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/prod
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+archive_mode = on
+archive_command = 'cp %p /db/pgsql/prodarchive/%f'    
+wal_keep_size = ‘500MB’ 
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/prod restart
+
+
+-bash-4.2$ ps -ef | grep postgres
+
+
+postgres  10054      1  0 09:59 ?        00:00:00 /usr/pgsql-12/bin/postgres -D /db/pgsql/prod
+postgres  10055  10054  0 09:59 ?        00:00:00 postgres: logger   
+postgres  10057  10054  0 09:59 ?        00:00:00 postgres: checkpointer   
+postgres  10058  10054  0 09:59 ?        00:00:00 postgres: background writer   
+postgres  10059  10054  0 09:59 ?        00:00:00 postgres: walwriter   
+postgres  10060  10054  0 09:59 ?        00:00:00 postgres: autovacuum launcher   
+postgres  10061  10054  0 09:59 ?        00:00:00 postgres: archiver   
+postgres  10062  10054  0 09:59 ?        00:00:00 postgres: stats collector   
+postgres  10063  10054  0 09:59 ?        00:00:00 postgres: logical replication launcher   
+
+
+
+
+
+
+===============
+
+
+-bash-4.2$ psql -p 5001
+Password for user postgres: 
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show archive_mode ;
+ archive_mode 
+--------------
+ on
+(1 row)
+
+
+postgres=# 
+postgres=# show wal_keep_size ;
+ wal_keep_size 
+---------------
+ 512MB
+(1 row)
+
+
+
+
+
+
+postgres=# create table archive1 as select * from pg_Class,pg_description limit 100000;
+SELECT 100000
+postgres=# 
+postgres=# select * from pg_stat_archiver ;
+ archived_count |    last_archived_wal     |        last_archived_time        | failed_count | last_failed_wal | last_failed_time |           stats_re
+set            
+----------------+--------------------------+----------------------------------+--------------+-----------------+------------------+-------------------
+---------------
+              1 | 000000010000000000000025 | 2022-09-15 20:11:57.230147+05:30 |            0 |                 |                  | 2022-09-13 21:21:1
+1.892131+05:30
+(1 row)
+
+
+postgres=# 
+postgres=# create table archive2 as select * from pg_Class,pg_description limit 1000000;
+SELECT 1000000
+postgres=# 
+postgres=# 
+postgres=# 
+postgres=# select * from pg_stat_archiver ;
+ archived_count |    last_archived_wal     |        last_archived_time        | failed_count | last_failed_wal | last_failed_time |           stats_re
+set            
+----------------+--------------------------+----------------------------------+--------------+-----------------+------------------+-------------------
+---------------
+             17 | 000000010000000000000035 | 2022-09-15 20:12:41.814171+05:30 |            0 |                 |                  | 2022-09-13 21:21:1
+1.892131+05:30
+(1 row)
+
+
+postgres=# show data_directory;
+ data_directory 
+----------------
+ /db/pgsql/data
+(1 row)
+
+
+
+
+
+
+================NEW TERMINAL
+
+
+[root@localhost ~]# ls -lrt  /db/pgsql/prodarchive/
+
+
+
+
+
+
+
+
+===========================ONLINE BACKUP PROCESS 
+
+
+-bash-4.2$ mkdir /db/pgsql/production
+
+
+-bash-4.2$ mkdir /db/pgsql/productionarchive
+
+
+-bash-4.2$ initdb -D /db/pgsql/production
+
+
+-bash-4.2$ cd /db/pgsql/production
+
+
+-bash-4.2$ vi postgresql.conf 
+
+
+
+
+port=5005
+archive_mode=on
+archive_command='cp %p /db/pgsql/productionarchive/%f'
+wal_keep_size='512MB'
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/production start 
+
+
+-bash-4.2$ psql -p 5005
+pgsql (14.5)
+Type "help" for help.
+
+
+postgres=# show archive_mode ;
+ archive_mode 
+--------------
+ on
+(1 row)
+
+
+postgres=# show archive_command ;
+          archive_command           
+------------------------------------
+ cp %p /db/pgsql/productionarchive/%f
+(1 row)
+
+
+postgres=# create table archive1 as select * from pg_class,pg_Description;
+SELECT 1853552
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ pg_basebackup -p 5005 -D /db/pgsql/productionbkp/ -P -v
+
+
+
+
+
+
+
+
+========================AFTER BACKUP 
+
+
+-bash-4.2$ psql -p 5005
+pgsql (14.5)
+Type "help" for help.
+
+
+postgres=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | archive1 | table | postgres
+ public | tbl1     | table | postgres
+ public | tbl2     | table | postgres
+ public | tbl3     | table | postgres
+(4 rows)
+
+
+postgres=# create table sgn1 as select * from pg_Class;
+SELECT 407
+postgres=# 
+postgres=# create table sgn2 as select * from pg_description;
+SELECT 4588
+postgres=# 
+postgres=# create table sgn3 as select * from pg_description,pg_class limit 100000;
+SELECT 100000
+postgres=# 
+postgres=# create table sgn4 as select * from pg_description,pg_class limit 500000;
+SELECT 500000
+postgres=# 
+postgres=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | archive1 | table | postgres
+ public | sgn1     | table | postgres
+ public | sgn2     | table | postgres
+ public | sgn3     | table | postgres
+ public | sgn4     | table | postgres
+
+
+
+
+postgres=# 
+
+
+postgres=# \q
+
+
+=====================================SERVER CRASHED
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/production stop
+waiting for server to shut down.... done
+server stopped
+
+
+
+
+===========================RESTORE THE ARCHIVES IN BACKUP SERVER 
+
+
+
+
+-bash-4.2$ cd /db/pgsql/productionbkp/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+restore_command = 'cp /db/pgsql/productionarchive/%f %p'
+
+
+:wq
+
+
+-bash-4.2$ touch recovery.signal
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/productionbkp/ start
+
+
+-bash-4.2$ psql -p 5005
+pgsql (14.5)
+Type "help" for help.
+
+
+postgres=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | archive1 | table | postgres
+ public | sgn1     | table | postgres
+ public | sgn2     | table | postgres
+ public | sgn3     | table | postgres
+ public | sgn4     | table | postgres
+
+
+postgres=# show data_directory;
+    data_directory     
+-----------------------
+ /db/pgsql/productionbkp/
+(1 row)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============================PITR STEPS
+
+
+-bash-4.2$ pwd
+/opt/postgres 
+-bash-4.2$ 
+-bash-4.2$ mkdir pitrprod
+-bash-4.2$ 
+-bash-4.2$ mkdir bkppitr
+-bash-4.2$ 
+-bash-4.2$ mkdir archivepitr
+-bash-4.2$ 
+-bash-4.2$ initdb -D pitrprod/
+-bash-4.2$ cd pitrprod/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+port = 5005 
+archive_mode = on
+archive_command = 'cp %p /opt/postgres/archivepitr/%f'  
+wal_keep_size = '512MB'
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../pitrprod/ start
+
+
+-bash-4.2$ psql -p 5005
+
+
+postgres=# 
+postgres=# create table bkp1 as select * from pg_class;
+SELECT 342
+postgres=# create table bkp2 as select * from pg_description;
+SELECT 4577
+postgres=# create table bkp3 as select * from pg_description,pg_class
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ pg_basebackup -p 5005 --format=t -D /opt/postgres/bkppitr/ -P
+waiting for checkpoint
+
+
+
+
+-bash-4.2$ psql -p 5005
+
+
+postgres=# create table pitr1 as select * from pg_class;
+SELECT 351
+postgres=# select * from current_timestamp;
+        current_timestamp         
+----------------------------------
+ 2020-10-28 20:21:36.374256+05:30
+(1 row)
+
+
+postgres=# create table pitr2 as select * from pg_description;
+SELECT 4577
+postgres=# 
+postgres=# select * from current_timestamp;
+        current_timestamp         
+----------------------------------
+ 2020-10-28 20:21:47.104666+05:30
+(1 row)
+
+
+postgres=# create table pitr3 as select * from pg_description,pg_class;
+SELECT 1633989
+postgres=# 
+postgres=# select * from current_timestamp;
+        current_timestamp         
+----------------------------------
+ 2020-10-28 20:22:21.367584+05:30
+(1 row)
+
+
+postgres=# drop table pitr2;
+DROP TABLE
+postgres=# 
+postgres=# select * from current_timestamp;
+        current_timestamp         
+----------------------------------
+ 2020-10-28 20:22:29.700104+05:30
+(1 row)
+
+
+postgres=# create table pitr4 as select * from pg_description;
+SELECT 4577
+postgres=# 
+postgres=# select * from current_timestamp;
+        current_timestamp         
+----------------------------------
+ 2020-10-28 20:22:42.023339+05:30
+(1 row)
+
+
+postgres=# \dt
+         List of relations
+ Schema | Name  | Type  |  Owner   
+--------+-------+-------+----------
+ public | bkp1  | table | postgres
+ public | bkp2  | table | postgres
+ public | bkp3  | table | postgres
+ public | pitr1 | table | postgres
+ public | pitr3 | table | postgres
+ public | pitr4 | table | postgres
+(6 rows)
+
+
+postgres=# 
+
+
+
+
+========================CONNECT TO BACKUP SERVER IN NEW TERMINAL 
+
+
+-bash-4.2$ cd /opt/postgres/bkppitr/
+-bash-4.2$ 
+-bash-4.2$ ls
+base.tar  pg_wal.tar
+-bash-4.2$ 
+-bash-4.2$ tar -xf base.tar 
+-bash-4.2$ 
+-bash-4.2$ tar -xf pg_wal.tar 
+-bash-4.2$ 
+-bash-4.2$ ls
+
+
+-bash-4.2$ cp 00000001000000000000001B pg_wal
+
+
+-bash-4.2$ vi postgresql.conf
+
+
+port=5006
+
+
+restore_command='cp /opt/postgres/archivepitr/%f %p'
+
+
+recovery_target_time='2020-10-28 20:21:47'         "NOTE----------------ADD PITR2 CREATION TIMESTAMP"
+
+
+:wq
+
+
+-bash-4.2$ touch recovery.signal
+
+
+
+
+-bash-4.2$ chmod 700 /opt/postgres/bkppitr/ 
+
+
+
+
+-bash-4.2$ pg_ctl -D /opt/postgres/bkppitr/ start
+
+
+
+
+-bash-4.2$ psql -p 5006
+
+
+postgres=# \dt
+         List of relations
+ Schema | Name  | Type  |  Owner   
+--------+-------+-------+----------
+ public | bkp1  | table | postgres
+ public | bkp2  | table | postgres
+ public | bkp3  | table | postgres
+ public | pitr1 | table | postgres
+ public | pitr2 | table | postgres
+(5 rows)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ pg_dump -p 5006 --table=pitr2 -f /opt/postgres/pitr2.sql
+-bash-4.2$ 
+-bash-4.2$ psql -p 5005 -f /opt/postgres/pitr2.sql 
+
+
+
+
+===========================CONNECT TO PRODUCTION SERVER
+
+
+-bash-4.2$ psql -p 5005
+
+
+
+
+postgres=# \dt
+         List of relations
+ Schema | Name  | Type  |  Owner   
+--------+-------+-------+----------
+ public | bkp1  | table | postgres
+ public | bkp2  | table | postgres
+ public | bkp3  | table | postgres
+ public | pitr1 | table | postgres
+ public | pitr2 | table | postgres
+ public | pitr3 | table | postgres
+ public | pitr4 | table | postgres
+(7 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=============================BART=======================
+
+
+[root@localhost ~]# cd Desktop/
+
+
+[root@localhost PostgresSoftware]# yum install edb-bart-1.1.0-1.rhel6.x86_64.rpm
+
+
+
+
+[root@localhost ~]# mkdir /db/pgsql/bartbackup
+
+
+[root@localhost ~]# chown postgres:postgres /db/pgsql/bartbackup -R
+
+
+[root@localhost PostgresSoftware]# su - postgres
+
+
+root@localhost PostgresSoftware]# cd /usr/edb-bart-1.1/etc/
+[root@localhost etc]# 
+[root@localhost etc]# vi bart.cfg 
+
+
+[BART]
+bart-host= postgres@127.0.0.1
+backup_path = /db/pgsql/bartbackup
+pg_basebackup_path = /usr/pgsql-14/bin/pg_basebackup
+logfile = /tmp/bart.log
+
+
+[clientserver]
+host = 127.0.0.1
+port = 5005
+user = postgres
+description = "Postgres server"
+retention_policy= 1 BACKUPS
+:wq
+
+
+
+
+[root@localhost etc]# su - postgres
+Last login: Sat Jun 12 03:35:23 PDT 2021 on pts/1
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ cd /usr/edb-bart-1.1/bin/
+-bash-4.2$ 
+-bash-4.2$ ./bart BACKUP -s clientserver
+
+
+-bash-4.2$ ./bart SHOW-BACKUPS -s clientserver
+ SERVER NAME   BACKUP ID       BACKUP TIME               BACKUP SIZE   WAL(s) SIZE   WAL FILES   STATUS  
+                                                                                                         
+ clientserver         1623494475990   2021-06-12 03:42:01 PDT   2.26 GB       0.00 bytes    0           active  
+                                                                                                         
+-bash-4.2$ ./bart BACKUP -s clientserver
+
+
+-bash-4.2$ ./bart SHOW-BACKUPS -s clientserver
+ SERVER NAME   BACKUP ID       BACKUP TIME               BACKUP SIZE   WAL(s) SIZE   WAL FILES   STATUS  
+                                                                                                         
+ clientserver         1623494592804   2021-06-12 03:43:58 PDT   2.26 GB       0.00 bytes    0           active  
+ clientserver         1623494475990   2021-06-12 03:42:01 PDT   2.26 GB       0.00 bytes    0           active  
+                                                                                                         
+-bash-4.2$ ./bart MANAGE -s clientserver
+INFO:  processing server 'clientserver', backup '1623494592804'
+INFO:  processing server 'clientserver', backup '1623494475990'
+INFO:  marking backup '1623494475990' as obsolete
+INFO:  0 WAL file(s) marked obsolete
+-bash-4.2$ 
+-bash-4.2$ ./bart SHOW-BACKUPS -s clientserver
+ SERVER NAME   BACKUP ID       BACKUP TIME               BACKUP SIZE   WAL(s) SIZE   WAL FILES   STATUS    
+                                                                                                           
+ clientserver         1623494592804   2021-06-12 03:43:58 PDT   2.26 GB       0.00 bytes    0           active    
+ clientserver         1623494475990   2021-06-12 03:42:01 PDT   2.26 GB       0.00 bytes    0           obsolete  
+                                                                                                           
+-bash-4.2$ 
+-bash-4.2$ ./bart DELETE -s clientserver -i 1623494475990
+INFO:  deleting backup '1623494475990' of server 'clientserver'
+INFO:  deleting backup '1623494475990'
+INFO:  0 WAL file(s) will be removed
+INFO:  backup(s) deleted
+-bash-4.2$ 
+-bash-4.2$ ./bart SHOW-BACKUPS -s clientserver
+ SERVER NAME   BACKUP ID       BACKUP TIME               BACKUP SIZE   WAL(s) SIZE   WAL FILES   STATUS  
+                                                                                                         
+ clientserver         1623494592804   2021-06-12 03:43:58 PDT   2.26 GB       0.00 bytes    0           active  
+                                                                                                         
+-bash-4.2$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+========STREAMING REPLICATION
+
+
+-bash-4.2$ pwd
+/db/pgsql
+-bash-4.2$ 
+-bash-4.2$ mkdir pdc
+-bash-4.2$ 
+-bash-4.2$ mkdir sdc
+-bash-4.2$ 
+-bash-4.2$ mkdir strarchive
+-bash-4.2$ 
+-bash-4.2$ initdb -D pdc/
+
+
+-bash-4.2$ cd pdc/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+archive_mode = on
+archive_command = 'cp %p /db/pgsql/strarchive/%f'  
+listen_addresses = '*'
+port = 5401 
+wal_keep_size = '512MB'
+wal_log_hints=on
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/pdc/ start
+-bash-4.2$ 
+-bash-4.2$ pg_basebackup -p 5401 -D /db/pgsql/sdc/
+-bash-4.2$ 
+-bash-4.2$ cd /db/pgsql/sdc/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+port = 5402
+primary_conninfo = 'host=127.0.0.1 port=5401' 
+restore_command = 'cp /app01/pgsql/strarchive/%f %p'
+
+
+:wq
+
+
+-bash-4.2$ touch standby.signal
+-bash-4.2$ 
+-bash-4.2$ chmod 700 /db/pgsql/sdc/ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/sdc/ start
+
+
+
+
+==============OPEN TWO TERMINAL 
+
+
+TERMINAL ONE :-
+
+
+-bash-4.2$ psql -p 5401
+psql (12.9)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+  data_directory   
+-------------------
+ /db/pgsql/pdc
+(1 row)
+
+
+postgres=# create table sgn as select * from pg_Class;
+SELECT 395
+postgres=# 
+
+
+postgres=# select pg_is_in_recovery();
+ pg_is_in_recovery 
+-------------------
+ f (false --> primary)
+(1 row)
+
+
+postgres=# select * from pg_stat_replication ;
+ pid  | usesysid | usename  | application_name | client_addr | client_hostname | client_port |          backend_start           | bac
+kend_xmin |   state   | sent_lsn  | write_lsn | flush_lsn | replay_lsn | write_lag | flush_lag | replay_lag | sync_priority | sync_st
+ate |            reply_time            
+------+----------+----------+------------------+-------------+-----------------+-------------+----------------------------------+----
+----------+-----------+-----------+-----------+-----------+------------+-----------+-----------+------------+---------------+--------
+----+----------------------------------
+ 1578 |       10 | postgres | walreceiver      | 127.0.0.1   |                 |       34208 | 2022-06-17 10:01:31.756694+05:30 |    
+          | streaming | 0/3000060 | 0/3000060 | 0/3000060 | 0/3000060  |           |           |            |             0 | async  
+    | 2022-06-17 10:03:52.123421+05:30
+(1 row)
+
+
+================================
+
+
+
+
+
+
+
+
+TERMINAL TWO :-
+
+
+-bash-4.2$ psql -p 5402
+psql (12.9)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+  data_directory   
+-------------------
+ /db/pgsql/sdc
+(1 row)
+
+
+postgres=# select pg_is_in_recovery();
+ pg_is_in_recovery 
+-------------------
+ t (TRUE = STANDBY )
+(1 row)
+
+
+postgres=# create table test as select * from pg_class;
+ERROR:  cannot execute CREATE TABLE AS in a read-only transaction
+
+
+
+
+
+
+postgres=# \dt
+        List of relations
+ Schema | Name | Type  |  Owner   
+--------+------+-------+----------
+ public | sgn  | table | postgres
+(1 row)
+
+
+postgres=# select count(*) from sgn ;
+ count 
+-------
+   395
+(1 row)
+
+
+=============================FAILOVER 
+
+
+PDC = DOWN
+SDC = NEW PRIMARY 
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/pdc/ stop
+waiting for server to shut down.... done
+server stopped
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /db/pgsql/sdc/ promote
+waiting for server to promote.... done
+server promoted
+
+
+
+
+=================CONNECT NEW PRIMARY 
+
+
+-bash-4.2$ psql -p 5402
+psql (12.9)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+  data_directory   
+-------------------
+ /db/pgsql/sdc
+(1 row)
+
+
+postgres=# create table failover as select * from pg_class;
+SELECT 398
+postgres=# 
+postgres=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | failover | table | postgres
+ public | sgn      | table | postgres
+(2 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+========================FAILBACK
+
+
+SDC = PRIMARY 
+
+
+PDC = STANDBY 
+=======================
+
+
+-bash-4.2$ cp /db/pgsql/pdc/postgresql.conf /db/pgsql
+
+
+-bash-4.2$ pg_rewind -D /db/pgsql/pdc/ --source-server='host=127.0.0.1 port=5402'
+pg_rewind: servers diverged at WAL location 0/40000A0 on timeline 1
+pg_rewind: rewinding from last common checkpoint at 0/4000028 on timeline 1
+pg_rewind: Done!
+
+
+
+
+-bash-4.2$ cd /db/pgsql/pdc/
+
+
+-bash-4.2$ cp /db/pgsql/postgresql.conf /db/pgsql/pdc
+
+
+-bash-4.2$ vi postgresql.conf 
+
+
+primary_conninfo = 'host=127.0.0.1 port=5402'
+
+
+
+
+:wq
+
+
+-bash-4.2$ touch standby.signal
+
+
+-bash-4.2$ pg_ctl -D /db/pgsql/pdc/ start
+
+
+
+
+================CONNECT TO NEW PRIMARY (SDC)
+
+
+-bash-4.2$ psql -p 5402
+psql (12.9)
+Type "help" for help.
+
+
+
+
+postgres=# create table failback as select * from pg_class;
+SELECT 401
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===================PDC IS STANDBY 
+
+
+-bash-4.2$ psql -p 5401
+psql (12.9)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+  data_directory   
+-------------------
+ /db/pgsql/pdc
+(1 row)
+
+
+postgres=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | failback | table | postgres
+ public | failover | table | postgres
+ public | sgn      | table | postgres
+(3 rows)
+
+
+========================SWITCHOVER
+
+
+PDC = PRIMARY
+
+
+SDC = STANDBY 
+
+
+======STEPS 
+
+
+1. STOP SDC
+2. cp /db/pgsql/sdc/postgresql.conf /db/pgsql
+3. Promote PDC 
+4. Run pg_rewind -D SDC --source-server='host=127.0.0.1 port=5401'
+5. copy /db/pgsql/sdc/postgresql.conf /db/pgsql/sdc
+6. touch standby.signal under /db/pgsql/sdc
+7. start the sdc 
+8. create table in pdc and check replication in sdc 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+======================LOGICAL STANDBY
+
+
+===========================POSTGRESQL V14
+
+
+-bash-4.2$ pwd
+/opt/postgres
+-bash-4.2$ 
+-bash-4.2$ mkdir data12
+-bash-4.2$ 
+-bash-4.2$ mkdir data14
+-bash-4.2$ 
+-bash-4.2$ /usr/pgsql-14/bin/initdb -D data14/
+
+
+-bash-4.2$ cd data14/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+
+
+listen_addresses = '*'   
+port = 5111 
+wal_level = logical  
+
+
+:wq
+
+
+-bash-4.2$ pg_ctl -D /opt/postgres/data14/ start
+
+
+
+
+====================INSTALL POSTGRESQL 12
+-bash-4.2$ logout
+[root@localhost ~]# 
+[root@localhost ~]# yum install postgresql12-server
+
+
+[root@localhost ~]# su - postgres
+Last login: Fri Sep 16 01:49:33 IST 2022 on pts/0
+-bash-4.2$ 
+-bash-4.2$ /usr/pgsql-12/bin/initdb -D data12/
+
+
+-bash-4.2$ cd data12/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+listen_addresses = '*' 
+port = 5222
+wal_level = replica
+
+
+:wq
+
+
+
+
+-bash-4.2$ /usr/pgsql-12/bin/pg_ctl -D /opt/postgres/data12/ start
+
+
+
+
+=====================================
+
+
+
+
+-bash-4.2$ psql -p 5111
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show wal_level ;
+ wal_level 
+-----------
+ logical
+(1 row)
+
+
+postgres=# create table sample(id int,name varchar(10));
+CREATE TABLE
+postgres=# 
+postgres=# create table sales(id int,name varchar(10));
+CREATE TABLE
+postgres=# 
+postgres=# create publication mypub for all tables;
+CREATE PUBLICATION
+
+
+
+
+====================================
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ /usr/pgsql-12/bin/psql -p 5222
+psql (12.12)
+Type "help" for help.
+
+
+postgres=# show wal_level ;
+ wal_level 
+-----------
+ replica
+(1 row)
+
+
+postgres=# create table sample(id int,name varchar(10));
+CREATE TABLE
+postgres=# 
+postgres=# create table sales(id int,name varchar(10));
+CREATE TABLE
+
+
+postgres=# create subscription mysub connection 'user=postgres host=127.0.0.1 port=5111 dbname=postgres' publication mypub;
+NOTICE:  created replication slot "mysub" on publisher
+CREATE SUBSCRIPTION
+
+
+===================================
+-bash-4.2$ psql -p 5111
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# insert into sales values(1001,'postgres');
+INSERT 0 1
+postgres=# 
+postgres=# 
+postgres=# alter table sample add dept varchar(10);
+ALTER TABLE
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ /usr/pgsql-12/bin/psql -p 5222
+psql (12.12)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select * from sales ;
+  id  |   name   
+------+----------
+ 1001 | postgres
+(1 row)
+
+
+postgres=# alter table sample add dept varchar(10);
+ALTER TABLE
+postgres=# 
+postgres=# alter subscription mysub refresh publication ;
+ALTER SUBSCRIPTION
+postgres=# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============STREAMING REPLICATION WITH SLOTS
+
+
+-bash-4.2$ pwd
+/opt/postgres
+-bash-4.2$ 
+-bash-4.2$ mkdir nodeA
+-bash-4.2$ 
+-bash-4.2$ mkdir nodeB
+-bash-4.2$ 
+-bash-4.2$ initdb -D nodeA/
+
+
+-bash-4.2$ cd nodeA/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+listen_addresses = '*'
+port = 6005 
+:wq
+
+
+-bash-4.2$ pg_ctl -D ../nodeA/ start
+-bash-4.2$ 
+-bash-4.2$ psql -p 6005
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# select pg_create_physical_replication_slot('postgres',true);
+ pg_create_physical_replication_slot 
+-------------------------------------
+ (postgres,0/16B16C8)
+(1 row)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ pg_basebackup -S postgres -D /opt/postgres/nodeB/ -R -v -p 6005
+
+
+-bash-4.2$ cd /opt/postgres/nodeB/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+port = 6006  
+:wq
+
+
+-bash-4.2$ chmod 700 /opt/postgres/nodeB/
+
+
+
+
+-bash-4.2$ pg_ctl -D /opt/postgres/nodeB/ start
+
+
+
+
+
+
+-bash-4.2$ psql -p 6005
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# create table slots as select * from pg_Class,pg_description;
+SELECT 1565334
+postgres=# \q
+
+
+-bash-4.2$ 
+-bash-4.2$ cd /opt/postgres/nodeA/pg_wal/
+-bash-4.2$ ls
+
+
+
+
+
+
+-bash-4.2$ psql -p 6006
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# select count(*) from slots;
+  count  
+---------
+ 1565334
+(1 row)
+
+
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /opt/postgres/nodeB/ stop
+waiting for server to shut down.... done
+server stopped
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ psql -p 6005
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# create table slots2 as select * from pg_Class,pg_description;
+SELECT 1579065
+postgres=# create table slots3 as select * from pg_Class,pg_description;
+SELECT 1592796
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ cd /opt/postgres/nodeA/pg_wal/
+-bash-4.2$ ls
+
+
+bash-4.2$ pg_ctl -D /opt/postgres/nodeB/ start
+-bash-4.2$ psql -p 6006
+psql (14.5)
+Type "help" for help.
+postgres=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | slots  | table | postgres
+ public | slots2 | table | postgres
+ public | slots3 | table | postgres
+(3 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+DAY FOUR
+
+
+=================================PGBOUNCER
+
+
+-bash-4.2$ psql -p 5432
+Type "help" for help.
+
+
+postgres=# select * from pg_shadow ;
+ usename  | usesysid | usecreatedb | usesuper | userepl | usebypassrls | passwd | valuntil | useconfig 
+----------+----------+-------------+----------+---------+--------------+--------+----------+-----------
+ postgres |       10 | t           | t        | t       | t            |        |          | 
+(1 row)
+
+
+postgres=# alter user postgres password '123456';
+ALTER ROLE
+postgres=# 
+postgres=# select * from pg_shadow ;
+ usename  | usesysid | usecreatedb | usesuper | userepl | usebypassrls |               passwd                | valuntil | useconfig 
+----------+----------+-------------+----------+---------+--------------+-------------------------------------+----------+-----------
+ postgres |       10 | t           | t        | t       | t            | md5a3556571e93b0d20722ba62be61e8c2d |          | 
+(1 row)
+
+
+postgres=# 
+
+
+
+
+[root@localhost ~]# yum install pgbouncer
+
+
+[root@localhost ~]# vi /etc/pgbouncer/pgbouncer.ini 
+
+
+
+
+=======NOTE : ADD AFTER "forcedb"
+
+
+postgres=host=127.0.0.1 port=5432
+
+
+==========EXISTING PARAMETER
+
+
+auth_type = trust
+
+
+listen_addr = 127.0.0.1
+listen_port = 6432
+
+
+
+
+:wq
+
+
+-bash-4.2$ exit
+logout
+[root@localhost ~]# 
+[root@localhost ~]# vi /etc/pgbouncer/userlist.txt
+"postgres" "md5a3556571e93b0d20722ba62be61e8c2d"
+:wq
+
+
+
+
+[root@localhost ~]# systemctl start pgbouncer
+[root@localhost ~]# 
+[root@localhost ~]# systemctl status pgbouncer
+● pgbouncer.service - A lightweight connection pooler for PostgreSQL
+   Loaded: loaded (/usr/lib/systemd/system/pgbouncer.service; disabled; vendor preset: disabled)
+   Active: active (running) since Thu 2021-12-02 21:25:21 IST; 4s ago
+ Main PID: 4294 (pgbouncer)
+    Tasks: 2
+
+
+
+
+[root@localhost ~]# su - postgres
+Last login: Thu Dec  2 21:23:19 IST 2021 on pts/0
+-bash-4.2$ 
+-bash-4.2$ psql -p 6432 -U postgres -d postgres -h 127.0.0.1
+psql (12.9)
+Type "help" for help.
+
+
+postgres=# show port;
+ port 
+------
+ 5432
+(1 row)
+
+
+postgres=# 
+postgres=# select inet_server_addr(),inet_server_port();
+ inet_server_addr | inet_server_port 
+------------------+------------------
+ 127.0.0.1        |             5432
+(1 row)
+
+
+
+
+=========================BENCHMARKING / LOAD TESTING 
+
+
+-bash-4.2$ pgbench -p 5001 -d postgres -U postgres -i -s 20
+
+
+-bash-4.2$ pgbench -p 6432 -d postgres -U postgres -h 127.0.0.1 -c 5 -T 60
+
+
+
+
+
+
+
+
+=============PGPOOL FOR VERSION 14===============================
+
+
+DOWNLOAD LINK
+
+
+https://drive.google.com/file/d/1kiP-CIvIXLtS63EheBUAIz8WqNEBvmvg/view?usp=sharing
+
+
+
+
+
+
+[root@localhost Postgres]# cd /root/Desktop/
+[root@localhost Postgres]# tar -zxf pgpool-II-4.1.0.tar.gz 
+[root@localhost Postgres]# 
+[root@localhost Postgres]# cd pgpool-II-4.1.0/
+[root@localhost pgpool-II-4.1.0]# ls
+
+
+[root@localhost pgpool-II-4.1.0]# 
+
+
+[root@localhost pgpool-II-4.1.0]# yum install postgresql14-devel
+
+
+[root@localhost pgpool-II-4.1.0]# yum install libpq* --skip-broken
+
+
+[root@localhost pgpool-II-4.1.0]# ./configure --prefix=/usr/pgsql-14/bin --libdir=/usr/pgsql-14/lib
+
+
+[root@localhost pgpool-II-4.1.0]# make
+
+
+[root@localhost pgpool-II-4.1.0]# make install
+
+
+[root@localhost pgpool-II-4.1.0]# su - postgres 
+
+
+-bash-4.2$ cd /usr/pgsql-14/bin/etc/
+-bash-4.2$ 
+-bash-4.2$ ls
+-bash-4.2$ pwd
+/usr/pgsql-14/bin/etc
+-bash-4.2$ 
+-bash-4.2$ cp pgpool.conf.sample-replication pgpool.conf
+-bash-4.2$ 
+-bash-4.2$ vi pgpool.conf
+
+
+listen_addresses = '*'
+
+
+socket_dir = '/var/run/postgresql/'
+
+
+backend_hostname0 = '127.0.0.1'
+backend_port0 = 5001
+backend_data_directory0 = '/opt/postgres/primary'
+
+
+backend_hostname1 = '127.0.0.1'
+backend_port1 = 5002
+backend_data_directory1 = '/opt/postgres/standby'
+
+
+pid_file_name = '/usr/pgsql-14/pgpool.pid'
+
+
+health_check_user = 'postgres'
+
+
+
+
+:wq
+
+
+-bash-4.2$ cd /usr/pgsql-14/bin/bin
+
+
+-bash-4.2$ ./pgpool &
+[1] 3440
+-bash-4.2$ 
+[1]+  Done                    ./pgpool
+-bash-4.2$ 
+-bash-4.2$ psql -p 9999
+psql (12.9)
+Type "help" for help.
+
+
+
+
+postgres=# show pool_nodes;
+ node_id | hostname  | port | status | lb_weight |  role  | select_cnt | load_balance_node | replication_delay | replication_state | replication_sync_state | last_status_change  
+---------+-----------+------+--------+-----------+--------+------------+-------------------+-------------------+-------------------+------------------------+---------------------
+ 0       | 127.0.0.1 | 5001 | up     | 1.000000  | master | 0          | true              | 0                 |                   |                        | 2021-12-02 21:18:38
+ 1       | 127.0.0.1 | 5002 | up     | 0.000000  | slave  | 0          | false             | 0                 |                   |                        | 2021-12-02 21:18:38
+(2 rows)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[root@localhost ~]# sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+
+[root@localhost ~]# sudo yum -y install pgbackrest
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+===================================PERFORMANCE TUNING
+
+
+-bash-4.2$ psql -p 5432
+psql (12.9)
+Type "help" for help.
+
+
+postgres=# show autovacuum;
+ autovacuum 
+------------
+ on
+(1 row)
+
+
+postgres=# alter system set autovacuum to off;
+ALTER SYSTEM
+postgres=# 
+postgres=# select pg_reload_conf();
+ pg_reload_conf 
+----------------
+ t
+(1 row)
+
+
+postgres=# 
+postgres=# show autovacuum;
+ autovacuum 
+------------
+ off
+(1 row)
+
+
+postgres=# create table testanalyze(id int);
+CREATE TABLE
+postgres=# 
+postgres=# insert into testanalyze values(generate_series(1,100000));
+INSERT 0 100000
+postgres=# 
+postgres=# select relpages,reltuples from pg_class where relname='testanalyze';
+ relpages | reltuples 
+----------+-----------
+        0 |         0
+(1 row)
+
+
+postgres=# explain select * from testanalyze ;
+                            QUERY PLAN                             
+-------------------------------------------------------------------
+ Seq Scan on testanalyze  (cost=0.00..1572.65 rows=112965 width=4)
+(1 row)
+
+
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 443 of 443 pages, containing 100000 live rows and 0 dead rows; 30000 rows in sample, 100000 estimated total rows
+ANALYZE
+postgres=# select relpages,reltuples from pg_class where relname='testanalyze';
+ relpages | reltuples 
+----------+-----------
+      443 |    100000
+(1 row)
+
+
+postgres=# explain select * from testanalyze ;
+                            QUERY PLAN                             
+-------------------------------------------------------------------
+ Seq Scan on testanalyze  (cost=0.00..1443.00 rows=100000 width=4)
+(1 row)
+
+
+postgres=# delete from testanalyze where id between 1 and 5000;
+DELETE 5000
+postgres=# 
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 443 of 443 pages, containing 95000 live rows and 5000 dead rows; 30000 rows in sample, 95000 estimated total rows
+ANALYZE
+postgres=# 
+postgres=# vacuum testanalyze ;
+VACUUM
+postgres=# 
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 443 of 443 pages, containing 95000 live rows and 0 dead rows; 30000 rows in sample, 95000 estimated total rows
+ANALYZE
+postgres=# truncate testanalyze ;
+TRUNCATE TABLE
+postgres=# 
+postgres=# insert into testanalyze values(generate_series(1,10));
+INSERT 0 10
+postgres=# 
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,2)  |  2
+ (0,3)  |  3
+ (0,4)  |  4
+ (0,5)  |  5
+ (0,6)  |  6
+ (0,7)  |  7
+ (0,8)  |  8
+ (0,9)  |  9
+ (0,10) | 10
+(10 rows)
+
+
+postgres=# delete from testanalyze where id in(2,4,6,8);
+DELETE 4
+postgres=# 
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 1 of 1 pages, containing 6 live rows and 4 dead rows; 6 rows in sample, 6 estimated total rows
+ANALYZE
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,3)  |  3
+ (0,5)  |  5
+ (0,7)  |  7
+ (0,9)  |  9
+ (0,10) | 10
+(6 rows)
+
+
+postgres=# insert into testanalyze values(11),(12),(13),(14);
+INSERT 0 4
+postgres=# 
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,3)  |  3
+ (0,5)  |  5
+ (0,7)  |  7
+ (0,9)  |  9
+ (0,10) | 10
+ (0,11) | 11
+ (0,12) | 12
+ (0,13) | 13
+ (0,14) | 14
+(10 rows)
+
+
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 1 of 1 pages, containing 10 live rows and 4 dead rows; 10 rows in sample, 10 estimated total rows
+ANALYZE
+postgres=# vacuum testanalyze ;
+VACUUM
+postgres=# 
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 1 of 1 pages, containing 10 live rows and 0 dead rows; 10 rows in sample, 10 estimated total rows
+ANALYZE
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,3)  |  3
+ (0,5)  |  5
+ (0,7)  |  7
+ (0,9)  |  9
+ (0,10) | 10
+ (0,11) | 11
+ (0,12) | 12
+ (0,13) | 13
+ (0,14) | 14
+(10 rows)
+
+
+postgres=# insert into testanalyze values(15),(16),(17),(18);
+INSERT 0 4
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,2)  | 15
+ (0,3)  |  3
+ (0,4)  | 16
+ (0,5)  |  5
+ (0,6)  | 17
+ (0,7)  |  7
+ (0,8)  | 18
+ (0,9)  |  9
+ (0,10) | 10
+ (0,11) | 11
+ (0,12) | 12
+ (0,13) | 13
+ (0,14) | 14
+(14 rows)
+
+
+postgres=# truncate testanalyze ;
+TRUNCATE TABLE
+postgres=# 
+postgres=# insert into testanalyze values(generate_series(1,1000000));
+INSERT 0 1000000
+postgres=# 
+postgres=# analyze VERBOSE testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 4425 of 4425 pages, containing 1000000 live rows and 0 dead rows; 30000 rows in sample, 1000000 estimated total rows
+ANALYZE
+postgres=# 
+postgres=# \dt+
+                       List of relations
+ Schema |    Name     | Type  |  Owner   | Size  | Description 
+--------+-------------+-------+----------+-------+-------------
+ public | testanalyze | table | postgres | 35 MB | 
+(1 row)
+
+
+postgres=# delete from testanalyze where id between 1 and 100000;
+DELETE 100000
+postgres=# 
+postgres=# \dt+
+                       List of relations
+ Schema |    Name     | Type  |  Owner   | Size  | Description 
+--------+-------------+-------+----------+-------+-------------
+ public | testanalyze | table | postgres | 35 MB | 
+(1 row)
+
+
+postgres=# analyze VERBOSE testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 4425 of 4425 pages, containing 900000 live rows and 100000 dead rows; 30000 rows in sample, 900000 estimated total rows
+ANALYZE
+postgres=# 
+postgres=# vacuum testanalyze ;
+VACUUM
+postgres=# 
+postgres=# analyze VERBOSE testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 4425 of 4425 pages, containing 900000 live rows and 0 dead rows; 30000 rows in sample, 900000 estimated total rows
+ANALYZE
+postgres=# 
+postgres=# \dt+
+                       List of relations
+ Schema |    Name     | Type  |  Owner   | Size  | Description 
+--------+-------------+-------+----------+-------+-------------
+ public | testanalyze | table | postgres | 35 MB | 
+(1 row)
+
+
+postgres=# 
+
+
+
+
+==========================================
+
+
+
+
+postgres=# truncate testanalyze ;
+TRUNCATE TABLE
+postgres=# 
+postgres=# \dt+
+                        List of relations
+ Schema |    Name     | Type  |  Owner   |  Size   | Description 
+--------+-------------+-------+----------+---------+-------------
+ public | testanalyze | table | postgres | 0 bytes | 
+(1 row)
+
+
+
+
+================================VACUUM FULL 
+
+
+postgres=# insert into testanalyze values(generate_series(1,1000000));
+INSERT 0 1000000
+postgres=# 
+postgres=# \dt+
+                       List of relations
+ Schema |    Name     | Type  |  Owner   | Size  | Description 
+--------+-------------+-------+----------+-------+-------------
+ public | testanalyze | table | postgres | 35 MB | 
+(1 row)
+
+
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 4425 of 4425 pages, containing 1000000 live rows and 0 dead rows; 30000 rows in sample, 1000000 estimated total rows
+ANALYZE
+postgres=# 
+postgres=# update testanalyze set id=1;
+UPDATE 1000000
+postgres=# 
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 8850 of 8850 pages, containing 1000000 live rows and 1000000 dead rows; 30000 rows in sample, 1000000 estimated total rows
+ANALYZE
+
+
+
+
+postgres=# \dt+
+                       List of relations
+ Schema |    Name     | Type  |  Owner   | Size  | Description 
+--------+-------------+-------+----------+-------+-------------
+ public | testanalyze | table | postgres | 69 MB | 
+(1 row)
+
+
+postgres=# vacuum testanalyze ;
+VACUUM
+postgres=# 
+postgres=# \dt+
+                       List of relations
+ Schema |    Name     | Type  |  Owner   | Size  | Description 
+--------+-------------+-------+----------+-------+-------------
+ public | testanalyze | table | postgres | 69 MB | 
+(1 row)
+
+
+postgres=# 
+
+
+
+
+postgres=# vacuum FULL testanalyze ;
+VACUUM
+postgres=# 
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 4425 of 4425 pages, containing 1000000 live rows and 0 dead rows; 30000 rows in sample, 1000000 estimated total rows
+ANALYZE
+postgres=# 
+postgres=# \dt+
+                       List of relations
+ Schema |    Name     | Type  |  Owner   | Size  | Description 
+--------+-------------+-------+----------+-------+-------------
+ public | testanalyze | table | postgres | 35 MB | 
+(1 row)
+
+
+
+
+==============CLUSTER 
+
+
+postgres=# truncate testanalyze ;
+TRUNCATE TABLE
+postgres=# 
+postgres=# insert into testanalyze values(generate_series(1,10));
+INSERT 0 10
+postgres=# 
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,2)  |  2
+ (0,3)  |  3
+ (0,4)  |  4
+ (0,5)  |  5
+ (0,6)  |  6
+ (0,7)  |  7
+ (0,8)  |  8
+ (0,9)  |  9
+ (0,10) | 10
+(10 rows)
+
+
+postgres=# delete from testanalyze where id in(2,4,6,8);
+DELETE 4
+postgres=# 
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,3)  |  3
+ (0,5)  |  5
+ (0,7)  |  7
+ (0,9)  |  9
+ (0,10) | 10
+(6 rows)
+
+
+postgres=# analyze testanalyze ;
+ANALYZE
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 1 of 1 pages, containing 6 live rows and 4 dead rows; 6 rows in sample, 6 estimated total rows
+ANALYZE
+postgres=# vacuum full testanalyze ;
+VACUUM
+postgres=# 
+postgres=# analyze verbose testanalyze ;
+INFO:  analyzing "public.testanalyze"
+INFO:  "testanalyze": scanned 1 of 1 pages, containing 6 live rows and 0 dead rows; 6 rows in sample, 6 estimated total rows
+ANALYZE
+postgres=# 
+postgres=# select ctid,* from testanalyze ;
+ ctid  | id 
+-------+----
+ (0,1) |  1
+ (0,2) |  3
+ (0,3) |  5
+ (0,4) |  7
+ (0,5) |  9
+ (0,6) | 10
+(6 rows)
+
+
+postgres=# insert into testanalyze values(11),(12),(13),(14);
+INSERT 0 4
+postgres=# 
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,2)  |  3
+ (0,3)  |  5
+ (0,4)  |  7
+ (0,5)  |  9
+ (0,6)  | 10
+ (0,7)  | 11
+ (0,8)  | 12
+ (0,9)  | 13
+ (0,10) | 14
+(10 rows)
+
+
+postgres=# insert into testanalyze values(2),(4),(6),(8);
+INSERT 0 4
+postgres=# 
+postgres=# select ctid,* from testanalyze ;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,2)  |  3
+ (0,3)  |  5
+ (0,4)  |  7
+ (0,5)  |  9
+ (0,6)  | 10
+ (0,7)  | 11
+ (0,8)  | 12
+ (0,9)  | 13
+ (0,10) | 14
+ (0,11) |  2
+ (0,12) |  4
+ (0,13) |  6
+ (0,14) |  8
+(14 rows)
+
+
+postgres=# select ctid,* from testanalyze order by id;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,11) |  2
+ (0,2)  |  3
+ (0,12) |  4
+ (0,3)  |  5
+ (0,13) |  6
+ (0,4)  |  7
+ (0,14) |  8
+ (0,5)  |  9
+ (0,6)  | 10
+ (0,7)  | 11
+ (0,8)  | 12
+ (0,9)  | 13
+ (0,10) | 14
+(14 rows)
+
+
+postgres=# create index idx_ta on testanalyze (id);
+CREATE INDEX
+postgres=# 
+postgres=# cluster testanalyze using idx_ta ;
+CLUSTER
+postgres=# 
+postgres=# select ctid,* from testanalyze;
+  ctid  | id 
+--------+----
+ (0,1)  |  1
+ (0,2)  |  2
+ (0,3)  |  3
+ (0,4)  |  4
+ (0,5)  |  5
+ (0,6)  |  6
+ (0,7)  |  7
+ (0,8)  |  8
+ (0,9)  |  9
+ (0,10) | 10
+ (0,11) | 11
+ (0,12) | 12
+ (0,13) | 13
+ (0,14) | 14
+(14 rows)
+
+
+postgres=# \d testanalyze 
+            Table "public.testanalyze"
+ Column |  Type   | Collation | Nullable | Default 
+--------+---------+-----------+----------+---------
+ id     | integer |           |          | 
+Indexes:
+    "idx_ta" btree (id) CLUSTER
+
+
+postgres=# 
+
+
+====================================SCAN TYPES 
+SEQ_SCAN
+INDEX_SCAN
+INDEX_ONLYSCAN
+TID
+
+
+================================
+
+
+postgres=# create table sales2021(id int,name varchar(10));
+CREATE TABLE
+postgres=# 
+postgres=# insert into sales2021 values(generate_Series(1,100000),'postgres');
+INSERT 0 100000
+postgres=# 
+postgres=# analyze sales2021 ;
+ANALYZE
+postgres=# 
+postgres=# explain select * from sales2021 where id=5000;
+                         QUERY PLAN                          
+-------------------------------------------------------------
+ Seq Scan on sales2021  (cost=0.00..1791.00 rows=1 width=13)
+   Filter: (id = 5000)
+(2 rows)
+
+
+postgres=# create index idx_sales on sales2021 (id);
+CREATE INDEX
+postgres=# 
+postgres=# \d sales2021 
+                    Table "public.sales2021"
+ Column |         Type          | Collation | Nullable | Default 
+--------+-----------------------+-----------+----------+---------
+ id     | integer               |           |          | 
+ name   | character varying(10) |           |          | 
+Indexes:
+    "idx_sales" btree (id)
+
+
+postgres=# explain select * from sales2021 where id=5000;
+                                 QUERY PLAN                                 
+----------------------------------------------------------------------------
+ Index Scan using idx_sales on sales2021  (cost=0.29..8.31 rows=1 width=13)
+   Index Cond: (id = 5000)
+(2 rows)
+
+
+postgres=# 
+
+
+postgres=# explain select id from sales2021 where id=5000;
+                                   QUERY PLAN                                   
+--------------------------------------------------------------------------------
+ Index Only Scan using idx_sales on sales2021  (cost=0.29..8.31 rows=1 width=4)
+   Index Cond: (id = 5000)
+(2 rows)
+
+
+postgres=# select ctid from sales2021 where id=5000;
+  ctid  
+--------
+ (27,5)
+(1 row)
+
+
+postgres=# explain select * from sales2021 where ctid='ctid(27,5)';
+                        QUERY PLAN                        
+----------------------------------------------------------
+ Tid Scan on sales2021  (cost=0.00..4.01 rows=1 width=13)
+   TID Cond: (ctid = '(27,5)'::tid)
+(2 rows)
+
+
+
+
+============================PARAMETER TUNING
+
+
+work_mem --------------------> sorting / filtering 
+maintenance_work_mem  -----------> vacuum / vacuum full/ analyze 
+effective_cache_size -----------------> index scan 
+cpu_tuple_cost -> query cost tuple 
+seq_page_cost -> query cost page 
+
+
+
+
+==================
+
+
+postgres=# truncate testanalyze ;
+TRUNCATE TABLE
+postgres=# 
+postgres=# insert into testanalyze values(generate_series(1,1000000));
+INSERT 0 1000000
+postgres=# 
+postgres=# drop index idx_ta ;
+DROP INDEX
+postgres=# 
+postgres=# analyze testanalyze ;
+ANALYZE
+postgres=# 
+postgres=# set work_mem to '64kB';
+SET
+postgres=# 
+postgres=# explain analyze select * from testanalyze order by id limit 1000;
+                                                                  QUERY PLAN                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=32437.09..32553.77 rows=1000 width=4) (actual time=1181.072..1181.661 rows=1000 loops=1)
+   ->  Gather Merge  (cost=32437.09..129666.18 rows=833334 width=4) (actual time=1181.070..1181.577 rows=1000 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Sort  (cost=31437.07..32478.74 rows=416667 width=4) (actual time=1066.501..1066.804 rows=1000 loops=3)
+               Sort Key: id
+               Sort Method: external merge  Disk: 5328kB
+               Worker 0:  Sort Method: external merge  Disk: 3984kB
+               Worker 1:  Sort Method: external merge  Disk: 4488kB
+               ->  Parallel Seq Scan on testanalyze  (cost=0.00..8591.67 rows=416667 width=4) (actual time=0.024..133.985 rows=333333 loops=3)
+ Planning Time: 0.359 ms
+ Execution Time: 1182.937 ms
+(12 rows)
+
+
+postgres=# set work_mem to '10MB';
+SET
+postgres=# 
+postgres=# explain analyze select * from testanalyze order by id limit 1000;
+                                                                  QUERY PLAN                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=32437.09..32553.77 rows=1000 width=4) (actual time=401.473..401.868 rows=1000 loops=1)
+   ->  Gather Merge  (cost=32437.09..129666.18 rows=833334 width=4) (actual time=401.472..401.783 rows=1000 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         ->  Sort  (cost=31437.07..32478.74 rows=416667 width=4) (actual time=368.233..368.303 rows=1000 loops=3)
+               Sort Key: id
+               Sort Method: top-N heapsort  Memory: 95kB
+               Worker 0:  Sort Method: top-N heapsort  Memory: 95kB
+               Worker 1:  Sort Method: top-N heapsort  Memory: 95kB
+               ->  Parallel Seq Scan on testanalyze  (cost=0.00..8591.67 rows=416667 width=4) (actual time=0.022..237.740 rows=333333 loops=3)
+ Planning Time: 0.075 ms
+ Execution Time: 401.939 ms
+(12 rows)
+
+
+postgres=# 
+postgres=# explain select * from testanalyze ;
+                             QUERY PLAN                              
+---------------------------------------------------------------------
+ Seq Scan on testanalyze  (cost=0.00..14425.00 rows=1000000 width=4)
+(1 row)
+
+
+postgres=# show cpu_tuple_cost ;
+ cpu_tuple_cost 
+----------------
+ 0.01
+(1 row)
+
+
+postgres=# show seq_page_cost ;
+ seq_page_cost 
+---------------
+ 1
+(1 row)
+
+
+postgres=# select relpages,reltuples from pg_class where relname='testanalyze';
+ relpages | reltuples 
+----------+-----------
+     4425 |     1e+06
+(1 row)
+
+
+postgres=# select relpages,reltuples::int from pg_class where relname='testanalyze';
+ relpages | reltuples 
+----------+-----------
+     4425 |   1000000
+(1 row)
+
+
+postgres=# select 0.01*1000000+1*4425;
+ ?column? 
+----------
+ 14425.00
+(1 row)
+
+
+postgres=# explain select * from testanalyze ;
+                             QUERY PLAN                              
+---------------------------------------------------------------------
+ Seq Scan on testanalyze  (cost=0.00..14425.00 rows=1000000 width=4)
+(1 row)
+
+
+postgres=# create index idx_testanalyze on testanalyze (id);
+CREATE INDEX
+postgres=# 
+postgres=# truncate testanalyze ;
+TRUNCATE TABLE
+postgres=# 
+postgres=# insert into testanalyze select * from generate_series(1,5000000) order by random();
+INSERT 0 5000000
+postgres=# 
+postgres=# analyze testanalyze ;
+ANALYZE
+postgres=# 
+postgres=# set effective_cache_size to '1MB';
+SET
+postgres=# 
+postgres=# explain select * from testanalyze order by id limit 1000;
+                                                QUERY PLAN                                                 
+-----------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.43..4017.08 rows=1000 width=4)
+   ->  Index Only Scan using idx_testanalyze on testanalyze  (cost=0.43..20083250.79 rows=5000000 width=4)
+(2 rows)
+
+
+postgres=# set effective_cache_size to '500MB';
+SET
+postgres=# 
+postgres=# explain select * from testanalyze order by id limit 1000;
+                                               QUERY PLAN                                                
+---------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.43..47.62 rows=1000 width=4)
+   ->  Index Only Scan using idx_testanalyze on testanalyze  (cost=0.43..235960.32 rows=5000000 width=4)
+(2 rows)
+
+
+postgres=# 
+
+
+
+
+=========================================TABLE PARTITION
+
+
+CREATE TABLE prange1(c1 NUMERIC, c2 VARCHAR(10)) PARTITION BY RANGE (c1) ;
+ 
+CREATE TABLE prange1_a1 PARTITION OF prange1 FOR VALUES FROM (100) TO (200) ;
+
+
+CREATE TABLE prange1_a2 PARTITION OF prange1 FOR VALUES FROM (201) TO (300);
+
+
+=========================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============================MAJOR VERSION UPGRADE
+[root@localhost pgpool-II-4.1.0]# yum install postgresql12-server
+
+
+[root@localhost pgpool-II-4.1.0]# chown postgres:postgres /usr/pgsql-14/ -R
+[root@localhost pgpool-II-4.1.0]# 
+[root@localhost pgpool-II-4.1.0]# 
+[root@localhost pgpool-II-4.1.0]# su - postgres
+Last login: Fri Aug 26 15:06:10 IST 2022 on pts/0
+-bash-4.2$ 
+-bash-4.2$ cd /usr/pgsql-12/bin/
+-bash-4.2$ 
+-bash-4.2$ ./initdb -D /u01/postgres/data12
+
+
+
+
+-bash-4.2$ initdb --version
+initdb (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ initdb -D /u01/postgres/data14
+
+
+-bash-4.2$ cd /usr/pgsql-12/bin/
+-bash-4.2$ 
+-bash-4.2$ ./pg_ctl -D /u01/postgres/data12/ start
+
+
+
+
+-bash-4.2$ ./psql -p 5432
+psql (12.12)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+    data_directory    
+----------------------
+ /u01/postgres/data12
+(1 row)
+
+
+postgres=# 
+postgres=# create table tbl12 as select * from pg_class;
+SELECT 395
+postgres=# 
+postgres=# create database db12;
+CREATE DATABASE
+postgres=# 
+postgres=# create user user12;
+CREATE ROLE
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ ./pg_ctl -D /u01/postgres/data12/ stop
+
+
+
+
+-bash-4.2$ pg_upgrade --version
+pg_upgrade (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_upgrade -d /u01/postgres/data12/ -D /u01/postgres/data14/ -b /usr/pgsql-12/bin/ -B /usr/pgsql-14/bin/
+
+
+-bash-4.2$ pg_ctl --version
+pg_ctl (PostgreSQL) 14.5
+-bash-4.2$ 
+-bash-4.2$ 
+-bash-4.2$ pg_ctl -D /u01/postgres/data14/ start
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# show data_directory;
+    data_directory    
+----------------------
+ /u01/postgres/data14
+(1 row)
+
+
+postgres=# \dt
+         List of relations
+ Schema | Name  | Type  |  Owner   
+--------+-------+-------+----------
+ public | tbl12 | table | postgres
+(1 row)
+
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ db12      | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | postgres=CTc/postgres+
+           |          |          |             |             | =c/postgres
+(4 rows)
+
+
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+PGBACKREST - INCREMENTAL BACKUP
+
+
+
+
+[root@localhost ~]# su - postgres
+Last login: Thu Jun 16 22:31:39 IST 2022 on pts/1
+-bash-4.2$ 
+-bash-4.2$ pwd
+/app01/postgres
+-bash-4.2$ 
+-bash-4.2$ mkdir pgdata
+-bash-4.2$ 
+-bash-4.2$ /usr/pgsql-14/bin/initdb -D /app01/postgres/pgdata/
+
+
+-bash-4.2$ killall postgres
+-bash-4.2$ 
+-bash-4.2$ cd /app01/postgres/pgdata/
+-bash-4.2$ 
+-bash-4.2$ vi postgresql.conf 
+
+
+archive_mode = on
+archive_command = 'pgbackrest --stanza=pg0app archive-push %p'    
+
+
+:wq
+
+
+-bash-4.2$ exit
+logout
+[root@localhost ~]# 
+[root@localhost ~]# sudo yum -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+
+
+[root@localhost ~]# sudo yum -y install pgbackrest
+
+
+
+
+[root@localhost ~]# mkdir /etc/pgbackrest
+[root@localhost ~]# 
+[root@localhost ~]# chown -R postgres:postgres /etc/pgbackrest
+[root@localhost ~]# chown -R postgres:postgres /usr/bin/pgbackrest 
+[root@localhost ~]# chown -R postgres:postgres /var/lib/pgbackrest 
+[root@localhost ~]# chown -R postgres:postgres /var/log/pgbackrest 
+[root@localhost ~]# 
+
+
+
+
+
+
+
+
+
+
+
+
+[root@localhost ~]# vi /etc/pgbackrest/pgbackrest.conf
+
+
+[global]
+repo1-path=/var/lib/pgbackrest
+repo1-retention-full=2
+
+
+[pg0app]
+pg1-path=/app01/postgres/pgdata
+pg1-port=5432
+pg1-user=postgres
+
+
+:wq
+
+
+[root@localhost ~]# su - postgres
+Last login: Thu Jun 16 23:13:50 IST 2022 on pts/1
+
+
+-bash-4.2$ 
+-bash-4.2$ /usr/pgsql-14/bin/pg_ctl -D /app01/postgres/pgdata/ start
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# create table tbl1 as select * from pg_class;
+SELECT 395
+postgres=# 
+postgres=# \q
+
+
+
+
+-bash-4.2$ pgbackrest stanza-create --stanza=pg0app --log-level-console=info
+
+
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# 
+postgres=# create table tbl2 as select * from pg_class,pg_description;
+SELECT 1826024
+postgres=# 
+postgres=# create table tbl3 as select * from pg_class,pg_description limit 500000;
+SELECT 500000
+postgres=# 
+postgres=# create table tbl4 as select * from pg_class,pg_description limit 500000;
+SELECT 500000
+postgres=# 
+postgres=# \q
+
+
+==========================FULL BACKUP 
+
+
+
+
+-bash-4.2$ pgbackrest backup --stanza=pg0app --log-level-console=info
+
+
+-bash-4.2$ cd /var/lib/pgbackrest/backup/pg0app/
+-bash-4.2$ 
+-bash-4.2$ ls
+20220616-232351F  backup.history  backup.info  backup.info.copy  latest
+-bash-4.2$ 
+
+
+=========INCREMENTAL BACKUP
+
+
+
+
+-bash-4.2$ psql -p 5432
+psql (14.5)
+Type "help" for help.
+
+
+postgres=# create table tbl5 as select * from pg_class,pg_description limit 500000;
+SELECT 500000
+postgres=# 
+postgres=# 
+postgres=# create table tbl6 as select * from pg_class,pg_description limit 500000;
+SELECT 500000
+postgres=# 
+postgres=# \q
+-bash-4.2$ 
+-bash-4.2$ pgbackrest backup --type=incr --stanza=pg0app --log-level-console=info
+
+
+-bash-4.2$ cd /var/lib/pgbackrest/backup/pg0app/
+-bash-4.2$ 
+-bash-4.2$ ls
+20220616-232351F  20220616-232351F_20220616-232803I  backup.history  backup.info  backup.info.copy  latest
+-bash-4.2$ du -sh 20220616-232351F
+73M        20220616-232351F
+-bash-4.2$ 
+-bash-4.2$ du -sh 20220616-232351F_20220616-232803I/
+48M        20220616-232351F_20220616-232803I/

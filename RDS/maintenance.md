@@ -1,7 +1,7 @@
 # Maintain AWS RDS Postgres instnace
 https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html
 
-
+# Check for 5GB tables and partition them
 
 ## Manage  Autovacuum
 
