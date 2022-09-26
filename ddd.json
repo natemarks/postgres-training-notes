@@ -1,0 +1,11 @@
+{
+  "RequestType": "create",
+  "resourecProperties": {
+    "app": "cts-rds",
+    "credfile": "secure.conf",
+    "env": "sandbox",
+    "key_name": "secure.databases.cts.master_password",
+    "resource_key": "master_password",
+    "securebucket": "com.imprivata.709310380790.us-east-1.secure-config"
+  }
+}

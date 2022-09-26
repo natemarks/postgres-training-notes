@@ -1,4 +1,5 @@
 Data discovery - what data to protyect in an instnace (pg_dump -v)
+ - 
 Data checkpointing -  how to roll back/recover data for migration testing 
  - test  by firing indexed data in that has timestamps
 How to manage test data for migration and upgrade testing
@@ -30,7 +31,7 @@ map on prem AAA (postgresql.confg and pg_hba.conf) to RDS AAA:
 validate replication/migration?
 
 measure performance?
-  
+
 care adn feeding -  indices, etc
 
 postgres llogging in aws?
